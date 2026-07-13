@@ -1228,3 +1228,261 @@ button, input, textarea {
         gap: 30px;
     }
 }
+
+/* ==========================================================================
+   Google Apps Systems & Browser Simulator Styling
+   ========================================================================== */
+.google-apps-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 40px;
+    margin-top: 40px;
+    align-items: stretch;
+}
+
+.google-apps-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-label {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gas-tabs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gas-tab-item {
+    display: flex;
+    align-items: stretch;
+    text-align: right;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    overflow: hidden;
+    padding: 16px;
+    position: relative;
+    transition: all var(--transition-fast);
+}
+
+.gas-tab-item:hover {
+    border-color: rgba(59, 130, 246, 0.35);
+    background-color: var(--bg-secondary);
+    transform: translateY(-2px);
+}
+
+.gas-tab-item.active {
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-primary);
+    box-shadow: 0 8px 24px -10px var(--shadow-color);
+}
+
+.gas-tab-indicator {
+    position: absolute;
+    top: 0;
+    left: 0; /* Left side indicator since direction in page is mixed */
+    width: 4px;
+    height: 100%;
+    background-color: transparent;
+    transition: background-color var(--transition-fast);
+}
+
+.gas-tab-item.active .gas-tab-indicator {
+    background-color: var(--accent-primary);
+}
+
+.gas-tab-info {
+    padding-left: 8px;
+    text-align: right;
+    width: 100%;
+}
+
+.gas-tab-info h5 {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.gas-tab-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.gas-details-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 24px;
+    box-shadow: 0 10px 30px -15px var(--shadow-color);
+}
+
+.gas-details-card h4 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.gas-details-card p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.gas-meta-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.gas-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-secondary);
+    background-color: rgba(0, 210, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 210, 255, 0.15);
+}
+
+.google-apps-viewer {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Browser Mockup Window */
+.browser-mockup-frame {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    height: 600px;
+    box-shadow: 0 25px 50px -15px var(--shadow-color);
+}
+
+.browser-mockup-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: 80px 1fr 80px;
+    align-items: center;
+    padding: 12px 20px;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot-red { background-color: #ef4444; }
+.dot-yellow { background-color: #f59e0b; }
+.dot-green { background-color: #10b981; }
+
+.browser-address-bar {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.lock-icon {
+    color: #10b981;
+    flex-shrink: 0;
+}
+
+.browser-url-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: ltr;
+    text-align: left;
+}
+
+.browser-window-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.browser-win-btn {
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.browser-win-btn:hover {
+    background-color: var(--bg-primary);
+    color: var(--accent-primary);
+}
+
+.browser-mockup-body {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.browser-iframe-view {
+    width: 100%;
+    flex-grow: 1;
+    border: none;
+    background-color: #ffffff; /* Typically Google Apps are light, keep white background */
+}
+
+.browser-iframe-disclaimer {
+    background-color: var(--bg-tertiary);
+    border-top: 1px solid var(--border-color);
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Adjustments for Google Apps sections on smaller views */
+@media (max-width: 992px) {
+    .google-apps-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .browser-mockup-frame {
+        height: 500px;
+    }
+}

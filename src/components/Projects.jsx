@@ -1,51 +1,7 @@
 import React, { useState } from 'react';
 
-export default function Projects() {
+export default function Projects({ projects }) {
     const [filter, setFilter] = useState('all');
-
-    const projects = [
-        {
-            id: 1,
-            title: "University Student Information System (SIS)",
-            description: "A high-performance desktop application for academic administration. Built natively using C++ and the Win32/MFC frameworks, it implements a secure database adapter linking to Microsoft SQL Server for optimized CRUD operations, student profiling, registration pipelines, and report generation.",
-            categories: ["desktop", "database"],
-            tags: ["C++", "Win32", "MFC", "SQL Server"],
-            links: [
-                { type: "private", text: "Private Repo", tooltip: "Proprietary / University Project" }
-            ]
-        },
-        {
-            id: 2,
-            title: "Interactive React UI Component Library",
-            description: "A lightweight, modular UI library built using React 18, Vite, and CSS variables. Emphasizes atomic design principles, screen-reader accessibility, customizable theme configurations, and zero external runtime dependencies. Includes charts, layouts, buttons, modals, and data tables.",
-            categories: ["web"],
-            tags: ["React", "Vite", "JavaScript", "CSS Variables"],
-            links: [
-                { type: "demo", text: "Live Demo", url: "#" },
-                { type: "code", text: "Code", url: "#" }
-            ]
-        },
-        {
-            id: 3,
-            title: "SQL Server Desktop Database Manager",
-            description: "A local database query tool designed for rapid relational schema design and optimization. Integrates directly with Microsoft SQL Server, featuring automatic schema extraction, SQL syntax highlight panels, query plan analyses, and database backup tools written in native Win32/C++.",
-            categories: ["desktop", "database"],
-            tags: ["C++", "Win32", "SQL Server", "Database Tuning"],
-            links: [
-                { type: "github", text: "GitHub", url: "#" }
-            ]
-        },
-        {
-            id: 4,
-            title: "Inventory Tracker Dashboard",
-            description: "A full-stack tracking client featuring a Bootstrap and React dashboard interface. Communicates with a remote SQL backend via custom Express API endpoints, presenting visual metrics for stock levels, delivery flows, alerts, and transactional statistics.",
-            categories: ["web", "database"],
-            tags: ["React", "Bootstrap", "SQL Server", "REST API"],
-            links: [
-                { type: "github", text: "GitHub", url: "#" }
-            ]
-        }
-    ];
 
     const handleMouseMove = (e) => {
         const card = e.currentTarget;
@@ -58,18 +14,19 @@ export default function Projects() {
     };
 
     const filterButtons = [
-        { id: 'all', label: 'All Projects' },
-        { id: 'desktop', label: 'Desktop (C++/Win32)' },
-        { id: 'web', label: 'Web Apps (React)' },
-        { id: 'database', label: 'Databases (SQL Server)' }
+        { id: 'all', label: 'جميع المشاريع' },
+        { id: 'web', label: 'تطبيقات الويب (Laravel / Node.js)' },
+        { id: 'database', label: 'نظم وقواعد البيانات (SQL / MongoDB)' }
     ];
+
+    if (!projects) return null;
 
     return (
         <section id="projects" className="projects section-padding">
             <div className="container">
                 <div className="section-header">
-                    <h2 className="section-title">Featured Projects</h2>
-                    <p className="section-subtitle">A collection of academic and independent works highlighting desktop engineering, database design, and web development.</p>
+                    <h2 className="section-title">المشاريع البرمجية العامة</h2>
+                    <p className="section-subtitle">معرض يضم المشاريع البرمجية وقواعد البيانات (منفصلة عن تطبيقات Google Apps Script) باستخدام أحدث أطر العمل.</p>
                 </div>
 
                 {/* Filter Controls */}
@@ -103,20 +60,12 @@ export default function Projects() {
                                 onMouseMove={handleMouseMove}
                             >
                                 <div className="project-icon-wrapper">
-                                    {project.categories.includes('desktop') && !project.categories.includes('web') && (
-                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                                        </svg>
-                                    )}
-                                    {project.categories.includes('web') && (
+                                    {project.categories.includes('web') ? (
                                         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="16 18 22 12 16 6"></polyline>
                                             <polyline points="8 6 2 12 8 18"></polyline>
                                         </svg>
-                                    )}
-                                    {project.categories.includes('database') && !project.categories.includes('desktop') && !project.categories.includes('web') && (
+                                    ) : (
                                         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                                             <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
@@ -124,15 +73,15 @@ export default function Projects() {
                                         </svg>
                                     )}
                                 </div>
-                                <h3 className="project-card-title">{project.title}</h3>
-                                <p className="project-card-description">{project.description}</p>
-                                <div className="project-tags">
+                                <h3 className="project-card-title" style={{ textAlign: 'right' }}>{project.title}</h3>
+                                <p className="project-card-description" style={{ textAlign: 'right', direction: 'rtl' }}>{project.description}</p>
+                                <div className="project-tags" style={{ justifyContent: 'flex-start', direction: 'ltr' }}>
                                     {project.tags.map(tag => (
                                         <span key={tag} className="tag">{tag}</span>
                                     ))}
                                 </div>
-                                <div className="project-links">
-                                    {project.links.map((link, idx) => {
+                                <div className="project-links" style={{ justifyContent: 'flex-start' }}>
+                                    {project.links && project.links.map((link, idx) => {
                                         if (link.type === 'private') {
                                             return (
                                                 <span key={idx} className="project-link-disabled" title={link.tooltip}>

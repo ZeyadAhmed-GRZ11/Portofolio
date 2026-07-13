@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Header({ activeSection, theme, toggleTheme }) {
+export default function Header({ activeSection, theme, toggleTheme, onAdminOpen }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -37,22 +37,42 @@ export default function Header({ activeSection, theme, toggleTheme }) {
         setMobileMenuOpen(prev => !prev);
     };
 
+    const [logoClicks, setLogoClicks] = useState(0);
+
     const handleLinkClick = () => {
         setMobileMenuOpen(false);
     };
 
+    const handleLogoClick = (e) => {
+        e.preventDefault();
+        handleLinkClick();
+        const nextClicks = logoClicks + 1;
+        setLogoClicks(nextClicks);
+        if (nextClicks >= 5) {
+            setLogoClicks(0);
+            onAdminOpen();
+        } else {
+            // Scroll to top
+            const homeSec = document.getElementById('home');
+            if (homeSec) {
+                homeSec.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    };
+
     const navLinks = [
-        { id: 'home', label: 'Home' },
-        { id: 'projects', label: 'Projects' },
-        { id: 'skills', label: 'Skills' },
-        { id: 'resume', label: 'Resume' },
-        { id: 'contact', label: 'Contact' }
+        { id: 'home', label: 'الرئيسية' },
+        { id: 'projects', label: 'المشاريع العامة' },
+        { id: 'google-apps', label: 'أنظمة Google Apps' },
+        { id: 'skills', label: 'المهارات' },
+        { id: 'resume', label: 'السيرة الذاتية' },
+        { id: 'contact', label: 'اتصل بي' }
     ];
 
     return (
         <header className={`navbar ${isScrolled ? 'scrolled' : ''}`} id="navbar">
             <div className="nav-container">
-                <a href="#home" className="logo" id="logo-link" onClick={handleLinkClick}>
+                <a href="#home" className="logo" id="logo-link" onClick={handleLogoClick}>
                     <span className="logo-accent">&lt;</span>Zeyad.Dev<span className="logo-accent">/&gt;</span>
                 </a>
                 

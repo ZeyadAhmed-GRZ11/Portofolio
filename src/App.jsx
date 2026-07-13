@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Projects from './components/Projects';
+import GoogleAppsSystems from './components/GoogleAppsSystems';
 import Skills from './components/Skills';
 import Resume from './components/Resume';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import AdminDashboard from './components/AdminDashboard';
+import { initialPortfolioData } from './data/portfolioData';
 
 export default function App() {
     // Theme Management
@@ -20,6 +23,34 @@ export default function App() {
 
     const [theme, setTheme] = useState(getInitialTheme);
     const [activeSection, setActiveSection] = useState('home');
+
+    // Dynamic Portfolio Data State
+    const [portfolioData, setPortfolioData] = useState(() => {
+        const saved = localStorage.getItem('portfolioData');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.error("Error parsing portfolioData from localStorage", e);
+            }
+        }
+        return initialPortfolioData;
+    });
+
+    const [isAdminOpen, setIsAdminOpen] = useState(false);
+
+    // Save data on changes
+    useEffect(() => {
+        localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
+    }, [portfolioData]);
+
+    const handleResetToDefault = () => {
+        if (window.confirm('هل تريد فعلاً إعادة تعيين كافة البيانات إلى الحالة الافتراضية؟ سيتم مسح التغييرات المحلية.')) {
+            setPortfolioData(initialPortfolioData);
+            localStorage.removeItem('portfolioData');
+            alert('تمت إعادة تعيين البيانات بنجاح.');
+        }
+    };
 
     useEffect(() => {
         const body = document.body;
@@ -72,19 +103,33 @@ export default function App() {
                 activeSection={activeSection} 
                 theme={theme} 
                 toggleTheme={toggleTheme} 
+                onAdminOpen={() => setIsAdminOpen(true)}
             />
 
             {/* Main Sections */}
             <main>
-                <Hero />
-                <Projects />
-                <Skills />
-                <Resume />
-                <Contact />
+                <Hero data={portfolioData.hero} />
+                <Projects projects={portfolioData.projects} />
+                <GoogleAppsSystems systems={portfolioData.googleAppsSystems} />
+                <Skills skills={portfolioData.skills} />
+                <Resume resume={portfolioData.resume} />
+                <Contact contact={portfolioData.contact} />
             </main>
 
             {/* Footer */}
-            <Footer />
+            <Footer 
+                contact={portfolioData.contact} 
+                onAdminOpen={() => setIsAdminOpen(true)} 
+            />
+
+            {/* Admin Controls Panel */}
+            <AdminDashboard 
+                isOpen={isAdminOpen} 
+                onClose={() => setIsAdminOpen(false)}
+                portfolioData={portfolioData}
+                setPortfolioData={setPortfolioData}
+                onResetToDefault={handleResetToDefault}
+            />
         </>
     );
 }
