@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export default function GoogleAppsSystems({ systems }) {
+export default function GoogleAppsSystems({ systems, lang, t }) {
     const [activeIdx, setActiveIdx] = useState(0);
     const sectionRef = useRef(null);
     const [visible, setVisible] = useState(false);
+    const isRtl = lang === 'ar';
 
     useEffect(() => {
         const observer = new IntersectionObserver(([entry]) => {
@@ -29,26 +30,28 @@ export default function GoogleAppsSystems({ systems }) {
 
     const copyToClipboard = (url) => {
         navigator.clipboard.writeText(url);
-        alert('تم نسخ رابط نظام Google Apps المباشر!');
+        const msg = isRtl ? 'تم نسخ رابط نظام Google Apps المباشر!' : 'Direct system URL copied to clipboard!';
+        alert(msg);
     };
+
+    const gt = t.googleApps;
 
     return (
         <section id="google-apps" className="google-apps section-padding alt-bg" ref={sectionRef}>
-            <div className="container">
-                <div className="section-header">
-                    <h2 className="section-title">أنظمة Google Apps Automation</h2>
-                    <p className="section-subtitle">
-                        مجموعة من الأنظمة المؤتمتة ولوحات التحكم المصممة خصيصاً على بيئة Google Workspace & Apps Script للتكامل الحي مع جداول البيانات والخدمات السحابية.
-                    </p>
+            <div className="container" dir={isRtl ? 'rtl' : 'ltr'}>
+                <div className="section-header" style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                    <span className="section-tag">Google Workspace</span>
+                    <h2 className="section-title">{gt.title}</h2>
+                    <p className="section-subtitle">{gt.subtitle}</p>
                 </div>
 
                 <div className={`google-apps-layout animate-on-scroll ${visible ? 'visible' : ''}`}>
                     {/* Selector Tabs & Details */}
                     <div className="google-apps-sidebar">
-                        <h4 className="sidebar-label">اختر النظام البرمجي للعرض</h4>
+                        <h4 className="sidebar-label">{gt.select}</h4>
                         <div className="gas-tabs-list">
                             {systems.map((sys, idx) => (
-                                <button 
+                                <button
                                     key={sys.id || idx}
                                     className={`gas-tab-item ${activeIdx === idx ? 'active' : ''}`}
                                     onClick={() => setActiveIdx(idx)}
@@ -67,15 +70,15 @@ export default function GoogleAppsSystems({ systems }) {
                             <h4>{activeSystem.title}</h4>
                             <p>{activeSystem.description}</p>
                             <div className="gas-meta-details">
-                                <span className="gas-tag">Google Apps Script</span>
-                                <span className="gas-tag">Web App Exec</span>
-                                <span className="gas-tag">Cloud Automations</span>
+                                {(gt.tags || ['Google Apps Script', 'Web App Exec', 'Cloud Automations']).map((tag, i) => (
+                                    <span key={i} className="gas-tag">{tag}</span>
+                                ))}
                             </div>
                             <div className="gas-action-btns">
-                                <a 
-                                    href={activeSystem.url} 
-                                    className="btn btn-primary btn-block" 
-                                    target="_blank" 
+                                <a
+                                    href={activeSystem.url}
+                                    className="btn btn-primary btn-block"
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     style={{ gap: '8px' }}
                                 >
@@ -84,10 +87,10 @@ export default function GoogleAppsSystems({ systems }) {
                                         <polyline points="15 3 21 3 21 9"></polyline>
                                         <line x1="10" y1="14" x2="21" y2="3"></line>
                                     </svg>
-                                    فتح النظام بملء الشاشة
+                                    {gt.open}
                                 </a>
-                                <button 
-                                    className="btn btn-secondary btn-block" 
+                                <button
+                                    className="btn btn-secondary btn-block"
                                     onClick={() => copyToClipboard(activeSystem.url)}
                                     style={{ gap: '8px', marginTop: '10px' }}
                                 >
@@ -95,7 +98,7 @@ export default function GoogleAppsSystems({ systems }) {
                                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                                     </svg>
-                                    نسخ رابط النظام المباشر
+                                    {gt.copy}
                                 </button>
                             </div>
                         </div>
@@ -118,9 +121,9 @@ export default function GoogleAppsSystems({ systems }) {
                                     <span className="browser-url-text">{activeSystem.url}</span>
                                 </div>
                                 <div className="browser-window-actions">
-                                    <button 
-                                        className="browser-win-btn" 
-                                        title="إعادة تحميل الإطار" 
+                                    <button
+                                        className="browser-win-btn"
+                                        title={isRtl ? 'إعادة تحميل الإطار' : 'Reload Frame'}
                                         onClick={() => {
                                             const iframe = document.getElementById('gas-viewer-iframe');
                                             if (iframe) iframe.src = iframe.src;
@@ -133,18 +136,16 @@ export default function GoogleAppsSystems({ systems }) {
                                 </div>
                             </div>
                             <div className="browser-mockup-body">
-                                <iframe 
+                                <iframe
                                     id="gas-viewer-iframe"
                                     src={activeSystem.url}
                                     title={activeSystem.title}
                                     className="browser-iframe-view"
                                     sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-scripts allow-same-origin"
                                 />
-                                
+
                                 <div className="browser-iframe-disclaimer">
-                                    <p>
-                                        تنبيه: إذا واجهت شاشة بيضاء أو لم يظهر النظام بالداخل بسبب سياسة حماية الإطارات (iframe protection) من Google، يمكنك النقر على زر <strong>"فتح النظام بملء الشاشة"</strong> بالجانب الأيسر لتشغيل التطبيق التفاعلي مباشرة.
-                                    </p>
+                                    <p>{gt.disclaimer}</p>
                                 </div>
                             </div>
                         </div>

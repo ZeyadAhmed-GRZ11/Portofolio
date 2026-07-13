@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './AdminDashboard.css';
 
 export default function AdminDashboard({ isOpen, onClose, portfolioData, setPortfolioData, onResetToDefault }) {
+    const fileInputRef = useRef(null);
     const [passcode, setPasscode] = useState('');
     const [loginError, setLoginError] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -54,6 +55,35 @@ export default function AdminDashboard({ isOpen, onClose, portfolioData, setPort
                 ...prev[section],
                 [field]: value
             }
+        }));
+    };
+
+    // Avatar image upload handler
+    const handleAvatarUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+            alert('حجم الصورة كبير جداً. الحد الأقصى 5MB.');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            updateField('hero', 'avatarBase64', ev.target.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleAvatarRemove = () => {
+        if (window.confirm('هل تريد حذف صورة الملف الشخصي؟')) {
+            updateField('hero', 'avatarBase64', null);
+        }
+    };
+
+    // Web3Forms key updater
+    const updateWeb3FormsKey = (value) => {
+        setPortfolioData(prev => ({
+            ...prev,
+            settings: { ...(prev.settings || {}), web3FormsKey: value }
         }));
     };
 
@@ -343,6 +373,38 @@ export default function AdminDashboard({ isOpen, onClose, portfolioData, setPort
                         ------------------------------------------------------------- */}
                     {activeTab === 'general' && (
                         <div>
+                            {/* == AVATAR UPLOAD CARD == */}
+                            <div className="admin-section-card">
+                                <h3 className="admin-section-title">📷 صورة الملف الشخصي (Avatar)</h3>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+                                    <div style={{ width: '100px', height: '100px', borderRadius: '50%', overflow: 'hidden', border: '3px solid var(--accent-primary)', flexShrink: 0, background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {portfolioData.hero.avatarBase64 ? (
+                                            <img src={portfolioData.hero.avatarBase64} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="var(--accent-primary)" strokeWidth="1.5">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                        )}
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>الصورة تُخزَّن محلياً في المتصفح. الحجم الأقصى 5MB. يُفضَّل صور مربعة.</p>
+                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                            <button type="button" className="btn btn-primary" style={{ fontSize: '0.85rem', padding: '8px 16px' }} onClick={() => fileInputRef.current?.click()}>
+                                                {portfolioData.hero.avatarBase64 ? '🔄 تغيير الصورة' : '📁 رفع صورة'}
+                                            </button>
+                                            {portfolioData.hero.avatarBase64 && (
+                                                <button type="button" className="btn btn-secondary" style={{ fontSize: '0.85rem', padding: '8px 16px', borderColor: 'rgba(239,68,68,0.5)', color: '#ef4444' }} onClick={handleAvatarRemove}>
+                                                    🗑️ حذف الصورة
+                                                </button>
+                                            )}
+                                        </div>
+                                        <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* == HERO INFO CARD == */}
                             <div className="admin-section-card">
                                 <h3 className="admin-section-title">بيانات القسم الرئيسي (Hero Header)</h3>
                                 <div className="admin-form-grid">
@@ -371,16 +433,26 @@ export default function AdminDashboard({ isOpen, onClose, portfolioData, setPort
                                         />
                                     </div>
                                     <div className="admin-form-group full-width">
-                                        <label>الوصف والنبذة التعريفية</label>
+                                        <label>الوصف والنبذة التعريفية (عربي)</label>
                                         <textarea 
                                             rows="4" 
                                             value={portfolioData.hero.description} 
                                             onChange={e => updateField('hero', 'description', e.target.value)}
                                         />
                                     </div>
+                                    <div className="admin-form-group full-width">
+                                        <label>الوصف والنبذة التعريفية (English)</label>
+                                        <textarea 
+                                            rows="4" 
+                                            value={portfolioData.hero.description_en || ''} 
+                                            onChange={e => updateField('hero', 'description_en', e.target.value)}
+                                            dir="ltr"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
+                            {/* == CONTACT INFO CARD == */}
                             <div className="admin-section-card">
                                 <h3 className="admin-section-title">بيانات التواصل والشبكات الاجتماعية</h3>
                                 <div className="admin-form-grid">
@@ -408,6 +480,24 @@ export default function AdminDashboard({ isOpen, onClose, portfolioData, setPort
                                             onChange={e => updateField('contact', 'github', e.target.value)}
                                         />
                                     </div>
+                                </div>
+                            </div>
+
+                            {/* == WEB3FORMS API KEY CARD == */}
+                            <div className="admin-section-card">
+                                <h3 className="admin-section-title">📬 مفتاح Web3Forms API (نموذج التواصل)</h3>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '14px' }}>
+                                    للحصول على المفتاح، سجّل مجاناً على <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)' }}>web3forms.com</a>، ثم انسخ الـ Access Key وألصقه هنا. ستصلك رسائل الزوار مباشرة إلى بريدك الإلكتروني.
+                                </p>
+                                <div className="admin-form-group full-width">
+                                    <label>Web3Forms Access Key</label>
+                                    <input 
+                                        type="text" 
+                                        dir="ltr"
+                                        placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                                        value={(portfolioData.settings || {}).web3FormsKey || ''} 
+                                        onChange={e => updateWeb3FormsKey(e.target.value)}
+                                    />
                                 </div>
                             </div>
                         </div>

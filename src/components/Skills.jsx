@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-function SkillsCard({ title, icon, skills }) {
+function SkillsCard({ title, icon, skills, isRtl }) {
     const cardRef = useRef(null);
     const [visible, setVisible] = useState(false);
 
@@ -12,37 +12,27 @@ function SkillsCard({ title, icon, skills }) {
             }
         }, { threshold: 0.1 });
 
-        if (cardRef.current) {
-            observer.observe(cardRef.current);
-        }
-
-        return () => {
-            if (cardRef.current) {
-                observer.unobserve(cardRef.current);
-            }
-        };
+        if (cardRef.current) observer.observe(cardRef.current);
+        return () => { if (cardRef.current) observer.unobserve(cardRef.current); };
     }, []);
 
     return (
         <div ref={cardRef} className={`skills-card animate-on-scroll ${visible ? 'visible' : ''}`}>
-            <div className="skills-header" style={{ flexDirection: 'row-reverse', justifyContent: 'flex-start' }}>
-                <div className="skill-icon" style={{ marginLeft: 0, marginRight: 'auto' }}>
+            <div className="skills-header" style={{ flexDirection: isRtl ? 'row-reverse' : 'row', justifyContent: isRtl ? 'flex-start' : 'flex-start' }}>
+                <div className="skill-icon" style={{ marginLeft: isRtl ? 0 : '12px', marginRight: isRtl ? '12px' : 0 }}>
                     {icon}
                 </div>
-                <h3 style={{ marginRight: '12px' }}>{title}</h3>
+                <h3>{title}</h3>
             </div>
-            <ul className="skills-list" style={{ direction: 'rtl' }}>
+            <ul className="skills-list" style={{ direction: isRtl ? 'rtl' : 'ltr' }}>
                 {skills.map(skill => (
                     <li key={skill.name}>
-                        <div className="skill-info" style={{ flexDirection: 'row-reverse' }}>
+                        <div className="skill-info" style={{ flexDirection: isRtl ? 'row-reverse' : 'row' }}>
                             <span>{skill.name}</span>
                             <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>{skill.level}%</span>
                         </div>
                         <div className="progress-bar">
-                            <div 
-                                className="progress" 
-                                style={{ width: visible ? `${skill.level}%` : '0%' }}
-                            ></div>
+                            <div className="progress" style={{ width: visible ? `${skill.level}%` : '0%' }}></div>
                         </div>
                     </li>
                 ))}
@@ -51,9 +41,10 @@ function SkillsCard({ title, icon, skills }) {
     );
 }
 
-export default function Skills({ skills }) {
+export default function Skills({ skills, lang, t }) {
     const additionalSkillsRef = useRef(null);
     const [additionalVisible, setAdditionalVisible] = useState(false);
+    const isRtl = lang === 'ar';
 
     useEffect(() => {
         const observer = new IntersectionObserver(([entry]) => {
@@ -63,15 +54,8 @@ export default function Skills({ skills }) {
             }
         }, { threshold: 0.1 });
 
-        if (additionalSkillsRef.current) {
-            observer.observe(additionalSkillsRef.current);
-        }
-
-        return () => {
-            if (additionalSkillsRef.current) {
-                observer.unobserve(additionalSkillsRef.current);
-            }
-        };
+        if (additionalSkillsRef.current) observer.observe(additionalSkillsRef.current);
+        return () => { if (additionalSkillsRef.current) observer.unobserve(additionalSkillsRef.current); };
     }, []);
 
     const coreTools = [
@@ -82,7 +66,9 @@ export default function Skills({ skills }) {
         "Relational & NoSQL Database schemas",
         "Google Workspace APIs / Automation",
         "Linux / CLI Command Line",
-        "Postman & API Testing"
+        "Postman & API Testing",
+        "Next.js App Router & SSR",
+        "Prisma ORM & Database migrations"
     ];
 
     const getIconForCategory = (catName) => {
@@ -117,30 +103,34 @@ export default function Skills({ skills }) {
 
     return (
         <section id="skills" className="skills section-padding alt-bg">
-            <div className="container">
-                <div className="section-header">
-                    <h2 className="section-title">المهارات والخبرات التقنية</h2>
-                    <p className="section-subtitle">المهارات البرمجية التي أعمل بها في تطوير الواجهات الأمامية والأنظمة الخلفية وقواعد البيانات.</p>
+            <div className="container" dir={isRtl ? 'rtl' : 'ltr'}>
+                <div className="section-header" style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                    <span className="section-tag">Tech Stack</span>
+                    <h2 className="section-title">{t.skills.title}</h2>
+                    <p className="section-subtitle">{t.skills.subtitle}</p>
                 </div>
 
                 <div className="skills-grid">
                     {skills.map((cat, idx) => (
-                        <SkillsCard 
+                        <SkillsCard
                             key={idx}
                             title={cat.category}
                             icon={getIconForCategory(cat.category)}
                             skills={cat.items}
+                            isRtl={isRtl}
                         />
                     ))}
                 </div>
 
                 {/* Extra / Foundational Skill Tags */}
-                <div 
-                    ref={additionalSkillsRef} 
+                <div
+                    ref={additionalSkillsRef}
                     className={`additional-skills animate-on-scroll ${additionalVisible ? 'visible' : ''}`}
                 >
-                    <h4 style={{ fontFamily: 'var(--font-heading)' }}>منهجيات العمل وأدوات التطوير</h4>
-                    <div className="tag-cloud" style={{ direction: 'rtl' }}>
+                    <h4 style={{ fontFamily: 'var(--font-heading)', textAlign: isRtl ? 'right' : 'left' }}>
+                        {t.skills.tools_title}
+                    </h4>
+                    <div className="tag-cloud" style={{ direction: isRtl ? 'rtl' : 'ltr', justifyContent: isRtl ? 'flex-end' : 'flex-start' }}>
                         {coreTools.map(tool => (
                             <span key={tool}>{tool}</span>
                         ))}

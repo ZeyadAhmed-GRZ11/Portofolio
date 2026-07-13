@@ -8,28 +8,30 @@ import Resume from './components/Resume';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AdminDashboard from './components/AdminDashboard';
-import { initialPortfolioData } from './data/portfolioData';
+import { initialPortfolioData, translations } from './data/portfolioData';
 
 export default function App() {
     // Theme Management
     const getInitialTheme = () => {
         const cachedTheme = localStorage.getItem('theme');
         const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-        if (cachedTheme === 'light' || (!cachedTheme && systemPrefersLight)) {
-            return 'light';
-        }
+        if (cachedTheme === 'light' || (!cachedTheme && systemPrefersLight)) return 'light';
         return 'dark';
     };
 
     const [theme, setTheme] = useState(getInitialTheme);
     const [activeSection, setActiveSection] = useState('home');
+    const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'ar');
 
     // Dynamic Portfolio Data State
     const [portfolioData, setPortfolioData] = useState(() => {
         const saved = localStorage.getItem('portfolioData');
         if (saved) {
             try {
-                return JSON.parse(saved);
+                const parsed = JSON.parse(saved);
+                // Migrate: ensure settings exists
+                if (!parsed.settings) parsed.settings = { web3FormsKey: '' };
+                return parsed;
             } catch (e) {
                 console.error("Error parsing portfolioData from localStorage", e);
             }
@@ -39,19 +41,34 @@ export default function App() {
 
     const [isAdminOpen, setIsAdminOpen] = useState(false);
 
-    // Save data on changes
+    // Current language dictionary
+    const t = translations[lang] || translations.ar;
+
+    // Persist data on changes
     useEffect(() => {
         localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
     }, [portfolioData]);
 
+    // Persist language on changes + set html dir
+    useEffect(() => {
+        localStorage.setItem('lang', lang);
+        document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+        document.documentElement.setAttribute('lang', lang);
+    }, [lang]);
+
+    const toggleLang = () => setLang(prev => prev === 'ar' ? 'en' : 'ar');
+
     const handleResetToDefault = () => {
-        if (window.confirm('هل تريد فعلاً إعادة تعيين كافة البيانات إلى الحالة الافتراضية؟ سيتم مسح التغييرات المحلية.')) {
+        if (window.confirm(lang === 'ar'
+            ? 'هل تريد فعلاً إعادة تعيين كافة البيانات إلى الحالة الافتراضية؟'
+            : 'Are you sure you want to reset all data to defaults?')) {
             setPortfolioData(initialPortfolioData);
             localStorage.removeItem('portfolioData');
-            alert('تمت إعادة تعيين البيانات بنجاح.');
+            alert(lang === 'ar' ? 'تمت إعادة التعيين بنجاح.' : 'Reset successful.');
         }
     };
 
+    // Theme toggle
     useEffect(() => {
         const body = document.body;
         if (theme === 'light') {
@@ -64,71 +81,59 @@ export default function App() {
         localStorage.setItem('theme', theme);
     }, [theme]);
 
-    const toggleTheme = () => {
-        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-    };
+    const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-    // Scrollspy Navigation
+    // Scrollspy
     useEffect(() => {
         const sections = document.querySelectorAll('section');
-        const scrollSpyOptions = {
-            root: null,
-            rootMargin: '-20% 0px -60% 0px',
-            threshold: 0
-        };
-
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    setActiveSection(entry.target.getAttribute('id'));
-                }
+                if (entry.isIntersecting) setActiveSection(entry.target.getAttribute('id'));
             });
-        }, scrollSpyOptions);
+        }, { root: null, rootMargin: '-20% 0px -60% 0px', threshold: 0 });
 
-        sections.forEach(section => observer.observe(section));
-
-        return () => {
-            sections.forEach(section => observer.unobserve(section));
-        };
+        sections.forEach(s => observer.observe(s));
+        return () => sections.forEach(s => observer.unobserve(s));
     }, []);
 
     return (
         <>
-            {/* Background Glow Elements */}
             <div className="glow glow-1"></div>
             <div className="glow glow-2"></div>
 
-            {/* Navigation Header */}
-            <Header 
-                activeSection={activeSection} 
-                theme={theme} 
-                toggleTheme={toggleTheme} 
+            <Header
+                activeSection={activeSection}
+                theme={theme}
+                toggleTheme={toggleTheme}
                 onAdminOpen={() => setIsAdminOpen(true)}
+                lang={lang}
+                toggleLang={toggleLang}
+                t={t}
             />
 
-            {/* Main Sections */}
             <main>
-                <Hero data={portfolioData.hero} />
-                <Projects projects={portfolioData.projects} />
-                <GoogleAppsSystems systems={portfolioData.googleAppsSystems} />
-                <Skills skills={portfolioData.skills} />
-                <Resume resume={portfolioData.resume} />
-                <Contact contact={portfolioData.contact} />
+                <Hero data={portfolioData.hero} lang={lang} t={t} />
+                <Projects projects={portfolioData.projects} lang={lang} t={t} />
+                <GoogleAppsSystems systems={portfolioData.googleAppsSystems} lang={lang} t={t} />
+                <Skills skills={portfolioData.skills} lang={lang} t={t} />
+                <Resume resume={portfolioData.resume} lang={lang} t={t} />
+                <Contact contact={portfolioData.contact} settings={portfolioData.settings} lang={lang} t={t} />
             </main>
 
-            {/* Footer */}
-            <Footer 
-                contact={portfolioData.contact} 
-                onAdminOpen={() => setIsAdminOpen(true)} 
+            <Footer
+                contact={portfolioData.contact}
+                onAdminOpen={() => setIsAdminOpen(true)}
+                lang={lang}
+                t={t}
             />
 
-            {/* Admin Controls Panel */}
-            <AdminDashboard 
-                isOpen={isAdminOpen} 
+            <AdminDashboard
+                isOpen={isAdminOpen}
                 onClose={() => setIsAdminOpen(false)}
                 portfolioData={portfolioData}
                 setPortfolioData={setPortfolioData}
                 onResetToDefault={handleResetToDefault}
+                lang={lang}
             />
         </>
     );
