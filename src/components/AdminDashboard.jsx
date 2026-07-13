@@ -264,7 +264,7 @@ export default function AdminDashboard({ isOpen, onClose, portfolioData, setPort
                     </div>
                     <form className="admin-login-form" onSubmit={handleLoginSubmit}>
                         <div className="form-group" style={{ textAlign: 'right' }}>
-                            <label htmlFor="admin-pwd" style={{ marginBottom: '6px', display: 'block' }}>كلمة المرور (الافتراضية: admin123)</label>
+                            <label htmlFor="admin-pwd" style={{ marginBottom: '6px', display: 'block' }}>كلمة المرور (الافتراضية: ****)</label>
                             <input 
                                 type="password" 
                                 id="admin-pwd" 
