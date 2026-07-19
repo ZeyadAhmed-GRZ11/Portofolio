@@ -77,7 +77,16 @@ function loadOrMigrateAppData() {
     if (typeof window !== 'undefined' && window.location) {
         const host = window.location.hostname.toLowerCase();
         const searchParams = new URLSearchParams(window.location.search);
-        const profileParam = searchParams.get('profile');
+        let profileParam = searchParams.get('profile');
+
+        // Fallback: check if the query param is appended after the hash, e.g., #portfolio?profile=company
+        if (!profileParam && window.location.hash.includes('?')) {
+            const hashQuery = window.location.hash.split('?')[1];
+            if (hashQuery) {
+                const hashParams = new URLSearchParams(hashQuery);
+                profileParam = hashParams.get('profile');
+            }
+        }
 
         const isAdmin = sessionStorage.getItem('isAdminAuthenticated') === 'true';
 
