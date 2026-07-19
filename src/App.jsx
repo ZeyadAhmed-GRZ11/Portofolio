@@ -135,14 +135,14 @@ export default function App() {
 
     // ── Dynamic Page Title ────────────────────────────────────────
     useEffect(() => {
-        if (isCompany) {
-            const companyName = companyProfile?.hero?.name || 'Tech Titans';
-            document.title = `${companyName}`;
+        if (activeProfile === 'company') {
+            const companyName = appData.profiles.company?.hero?.name || 'Tech Titans';
+            document.title = companyName;
         } else {
-            const ownerName = personalProfile?.hero?.name || 'Zeyad Ahmed';
+            const ownerName = appData.profiles.personal?.hero?.name || 'Zeyad Ahmed';
             document.title = `${ownerName} | Desktop & Web Developer Portfolio`;
         }
-    }, [activeProfile, companyProfile?.hero?.name, personalProfile?.hero?.name]);
+    }, [activeProfile, appData.profiles.company?.hero?.name, appData.profiles.personal?.hero?.name]);
 
     useEffect(() => {
         localStorage.setItem('lang', lang);
