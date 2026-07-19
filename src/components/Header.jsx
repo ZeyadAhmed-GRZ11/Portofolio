@@ -45,10 +45,11 @@ export default function Header({ activeSection, theme, toggleTheme, onAdminOpen,
     ];
 
     const companyLinks = [
-        { id: 'hero',      sectionKey: 'hero',      label: t.nav.home },
-        { id: 'services',  sectionKey: 'services',  label: t.nav.services },
-        { id: 'portfolio', sectionKey: 'portfolio', label: t.nav.portfolio },
-        { id: 'contact',   sectionKey: 'contact',   label: t.nav.contact },
+        { id: 'hero',            sectionKey: 'hero',      label: t.nav.home },
+        { id: 'services',        sectionKey: 'services',  label: t.nav.services },
+        { id: 'portfolio',       sectionKey: 'portfolio', label: t.nav.portfolio },
+        { id: 'company-systems', sectionKey: 'systems',   label: t.nav.systems },
+        { id: 'contact',         sectionKey: 'contact',   label: t.nav.contact },
     ];
 
     const allLinks = isCompany ? companyLinks : personalLinks;

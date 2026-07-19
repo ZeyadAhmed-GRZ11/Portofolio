@@ -14,6 +14,7 @@ export const translations = {
             // Company nav
             services: 'الخدمات',
             portfolio: 'أعمالنا',
+            systems: 'أنظمة البرمجيات',
         },
         hero: {
             tagline: 'مرحباً بك، أنا',
@@ -89,6 +90,13 @@ export const translations = {
             services_subtitle: 'نقدم حلولاً برمجية متكاملة تلبي احتياجات الشركات والأعمال.',
             portfolio_title: 'أعمالنا ومشاريعنا',
             portfolio_subtitle: 'نماذج من المشاريع التي نفذناها لعملائنا في مختلف القطاعات.',
+            systems_title: 'أنظمة الويب والبرمجيات',
+            systems_subtitle: 'أنظمة ولوحات تحكم حية مبنية على Google Workspace وتطبيقات الويب المتكاملة يمكنك تجربتها مباشرة.',
+            systems_select: 'اختر النظام للعرض',
+            systems_open: 'فتح النظام بملء الشاشة',
+            systems_copy: 'نسخ رابط النظام',
+            systems_tags: ['Google Apps Script', 'Web Systems', 'Cloud Solutions'],
+            systems_disclaimer: 'تنبيه: إذا ظهرت شاشة بيضاء بسبب سياسة Google، اضغط "فتح النظام بملء الشاشة".',
             contact_title: 'تواصل مع Tech Titans',
             contact_subtitle: 'هل لديك مشروع في ذهنك؟ تحدث إلينا وسنساعدك على تحويل فكرتك إلى واقع.',
             connect: 'تواصل مع الفريق',
@@ -107,6 +115,7 @@ export const translations = {
             // Company nav
             services: 'Services',
             portfolio: 'Portfolio',
+            systems: 'Systems',
         },
         hero: {
             tagline: 'Hi, I am',
@@ -182,6 +191,13 @@ export const translations = {
             services_subtitle: 'We deliver end-to-end software solutions tailored to every business need.',
             portfolio_title: 'Our Work & Projects',
             portfolio_subtitle: 'A selection of projects we have delivered for clients across various industries.',
+            systems_title: 'Web & Software Systems',
+            systems_subtitle: 'Live systems and dashboards built on Google Workspace and integrated web apps — try them directly.',
+            systems_select: 'Select a system to preview',
+            systems_open: 'Open System Full Screen',
+            systems_copy: 'Copy System URL',
+            systems_tags: ['Google Apps Script', 'Web Systems', 'Cloud Solutions'],
+            systems_disclaimer: 'Note: If you see a blank screen due to Google iframe restrictions, click "Open System Full Screen".',
             contact_title: 'Contact Tech Titans',
             contact_subtitle: "Have a project in mind? Talk to us and we'll help you turn your idea into reality.",
             connect: 'Connect With Our Team',
@@ -207,6 +223,7 @@ const defaultCompanyVisibility = {
     hero: true,
     services: true,
     portfolio: true,
+    systems: true,
     contact: true
 };
 
@@ -293,6 +310,7 @@ export const initialAppData = {
                     description_en: 'A full-featured developer platform built exclusively for programmers and developers to share projects, connect with each other, and showcase their coding skills in a professional environment. Built with Next.js for high performance and optimal SEO, Prisma ORM for efficient PostgreSQL database interactions, and Clerk for a secure authentication system supporting GitHub and Google sign-in.',
                     categories: ['web', 'database'],
                     tags: ['Next.js', 'Prisma', 'Clerk', 'PostgreSQL', 'TypeScript'],
+                    image: '/projects/codezone.png',
                     links: [
                         { type: 'demo', text: 'Live Demo', url: 'https://code-zone-opal.vercel.app/' },
                         { type: 'github', text: 'GitHub', url: '#' }
@@ -305,6 +323,7 @@ export const initialAppData = {
                     description_en: 'A full-stack e-commerce web application featuring a complete admin dashboard, shopping cart, payment management, and automated invoicing built with Laravel and MySQL.',
                     categories: ['web', 'database'],
                     tags: ['PHP', 'Laravel', 'MySQL', 'Bootstrap'],
+                    image: '/projects/ecommerce.png',
                     links: [{ type: 'github', text: 'GitHub', url: '#' }]
                 },
                 {
@@ -314,6 +333,7 @@ export const initialAppData = {
                     description_en: 'An interactive dashboard for real-time inventory monitoring and shipment tracking, connected to Supabase for authentication and live data streaming.',
                     categories: ['web', 'database'],
                     tags: ['Node.js', 'Express', 'PostgreSQL', 'Supabase'],
+                    image: '/projects/logistics.png',
                     links: [{ type: 'github', text: 'GitHub', url: '#' }]
                 },
                 {
@@ -323,6 +343,7 @@ export const initialAppData = {
                     description_en: 'A Python automation tool that extracts, cleans, and migrates data from Oracle SQL databases to modern PostgreSQL environments with automated data integrity reports.',
                     categories: ['database'],
                     tags: ['Python', 'Oracle SQL', 'PostgreSQL', 'Data Migration'],
+                    image: '/projects/migration.png',
                     links: [{ type: 'private', text: 'Private Project', tooltip: 'Proprietary project for corporate clients' }]
                 },
                 {
@@ -332,6 +353,7 @@ export const initialAppData = {
                     description_en: 'An advanced web app for patient registration, appointment booking, and medical record tracking with secure storage built using React and MongoDB.',
                     categories: ['web', 'database'],
                     tags: ['React', 'Node.js', 'MongoDB', 'Express'],
+                    image: '/projects/clinic.png',
                     links: [{ type: 'github', text: 'GitHub', url: '#' }]
                 }
             ],
@@ -457,6 +479,7 @@ export const initialAppData = {
                     description_ar: 'نظام متكامل لإدارة العمليات والتقارير والفواتير يخدم أكثر من 50 شركة.',
                     description_en: 'An integrated system for managing operations, reports, and invoicing serving 50+ businesses.',
                     tags: ['React', 'Node.js', 'PostgreSQL', 'Google Apps Script'],
+                    image: '/projects/company_smart_biz.png',
                     url: '#'
                 },
                 {
@@ -466,6 +489,7 @@ export const initialAppData = {
                     description_ar: 'تطبيق ويب لإدارة العيادات والمواعيد والسجلات الطبية مع أمان بيانات عالي المستوى.',
                     description_en: 'A web app for managing clinics, appointments, and medical records with enterprise-grade data security.',
                     tags: ['Next.js', 'Prisma', 'Supabase', 'TypeScript'],
+                    image: '/projects/clinic.png',
                     url: '#'
                 },
                 {
@@ -475,7 +499,26 @@ export const initialAppData = {
                     description_ar: 'حل رقمي متكامل لتتبع المخزون والشحنات وإدارة الموردين في الوقت الفعلي.',
                     description_en: 'A comprehensive digital solution for real-time inventory tracking, shipment management, and vendor relations.',
                     tags: ['Laravel', 'MySQL', 'React', 'REST APIs'],
+                    image: '/projects/logistics.png',
                     url: '#'
+                }
+            ],
+            googleAppsSystems: [
+                {
+                    id: 'csys-1',
+                    title: 'نظام إدارة وأتمتة الأعمال الذكي',
+                    title_en: 'Smart Business Management System',
+                    description: 'نظام متكامل مبني على Google Apps Script يقوم بربط جداول البيانات والتقارير وإرسال بريد إلكتروني مؤتمت وإصدار فواتير PDF وتتبع المبيعات في الوقت الفعلي مع واجهة تفاعلية.',
+                    description_en: 'An integrated system built on Google Apps Script connecting spreadsheets, automated email reports, PDF invoicing, and real-time sales tracking with an interactive dashboard.',
+                    url: 'https://script.google.com/macros/s/AKfycbyH2dlAjFTuBP_wheM6SglaeqWs1fjPqD0OtcczWYtaaUmAcW2tJg2kni4UgY9sEnTdxw/exec'
+                },
+                {
+                    id: 'csys-2',
+                    title: 'نظام تتبع وإدارة سير العمل والمهام',
+                    title_en: 'Workflow & Task Management System',
+                    description: 'لوحة تحكم تفاعلية لعرض العمليات وتتبع إنجاز المهام للفرق والمشاريع مع تنبيهات مباشرة وتقارير أداء آلية.',
+                    description_en: 'An interactive dashboard for tracking team operations and project task completion with live alerts and automated performance reports.',
+                    url: 'https://script.google.com/macros/s/AKfycby8zvbTvTloUoDmhWYUTPgexnnnbgYYwtRYSEUy75zQstnoJt7dhrDgpY3q91NVsr--/exec'
                 }
             ],
             contact: {

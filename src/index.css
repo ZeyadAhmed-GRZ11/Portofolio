@@ -627,6 +627,28 @@ button, input, textarea {
     box-shadow: 0 20px 40px -15px var(--shadow-color);
 }
 
+.project-card-image-container {
+    width: 100%;
+    height: 180px;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    z-index: 1;
+}
+
+.project-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-normal);
+}
+
+.project-card:hover .project-card-image {
+    transform: scale(1.06);
+}
+
 .project-icon-wrapper {
     width: 48px;
     height: 48px;
@@ -850,14 +872,14 @@ button, input, textarea {
 
 .timeline-col {
     position: relative;
-    padding-left: 20px;
+    padding-inline-start: 20px; /* logical: left in LTR, right in RTL */
 }
 
 .timeline-col::before {
     content: '';
     position: absolute;
     top: 5px;
-    left: 0;
+    inset-inline-start: 0; /* logical: left in LTR, right in RTL */
     width: 2px;
     height: calc(100% - 10px);
     background-color: var(--border-color);
@@ -875,7 +897,7 @@ button, input, textarea {
 .timeline-dot {
     position: absolute;
     top: 5px;
-    left: -25px;
+    inset-inline-start: -25px; /* logical: left in LTR, right in RTL */
     width: 12px;
     height: 12px;
     border-radius: 50%;
@@ -924,7 +946,8 @@ button, input, textarea {
 /* ==========================================================================
    Contact Section
    ========================================================================== */
-.contact-grid {
+.contact-grid,
+.contact-wrapper {
     display: grid;
     grid-template-columns: 0.8fr 1.2fr;
     gap: 40px;
@@ -1186,10 +1209,11 @@ button, input, textarea {
     
     .hero-container {
         grid-template-columns: 1fr;
-        gap: 60px;
+        gap: 50px;
         text-align: center;
         min-height: auto;
-        padding-top: 140px;
+        padding-top: 120px;
+        padding-bottom: 40px;
     }
 
     .hero-content {
@@ -1197,7 +1221,7 @@ button, input, textarea {
     }
 
     .hero-description {
-        margin: 0 auto 40px auto;
+        margin: 0 auto 36px auto;
     }
 
     .hero-cta {
@@ -1205,8 +1229,8 @@ button, input, textarea {
     }
 
     .image-wrapper {
-        width: 280px;
-        height: 280px;
+        width: 260px;
+        height: 260px;
     }
 
     .timeline-container {
@@ -1218,21 +1242,32 @@ button, input, textarea {
         margin-top: 20px;
     }
 
-    .contact-grid {
+    /* Contact grid stacks on tablet */
+    .contact-grid,
+    .contact-wrapper {
         grid-template-columns: 1fr;
         gap: 50px;
+    }
+
+    /* Footer stacks on tablet */
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
 }
 
 @media (max-width: 768px) {
+    /* ── Mobile Navigation ─────────────────────────────────────── */
     .mobile-toggle {
         display: flex;
     }
 
+    /* LTR: slide in from left */
     .nav-menu {
         position: fixed;
         top: 80px;
         left: -100%;
+        right: auto;
         width: 100%;
         height: calc(100vh - 80px);
         background-color: var(--bg-primary);
@@ -1240,32 +1275,179 @@ button, input, textarea {
         align-items: center;
         justify-content: center;
         gap: 40px;
-        transition: left 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);
+        transition: left 0.4s cubic-bezier(0.1, 0.8, 0.3, 1), right 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);
         border-top: 1px solid var(--border-color);
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        z-index: 999;
     }
 
     .nav-menu.active {
         left: 0;
     }
 
+    /* RTL: slide in from right */
+    [dir="rtl"] .nav-menu {
+        left: auto;
+        right: -100%;
+    }
+
+    [dir="rtl"] .nav-menu.active {
+        right: 0;
+        left: auto;
+    }
+
     .nav-link {
         font-size: 1.25rem;
     }
 
-    .projects-grid {
+    /* ── Section sizing ──────────────────────────────────────────── */
+    .section-padding {
+        padding: 60px 0;
+    }
+
+    .container {
+        width: 94%;
+    }
+
+    /* ── Hero on mobile ──────────────────────────────────────────── */
+    .hero-container {
+        padding-top: 100px;
+        gap: 32px;
+    }
+
+    .hero-title {
+        font-size: clamp(2rem, 8vw, 3rem);
+    }
+
+    .image-wrapper {
+        width: 220px;
+        height: 220px;
+    }
+
+    /* ── Projects / Certificates grid ───────────────────────────── */
+    .projects-grid,
+    .certificates-grid {
         grid-template-columns: 1fr;
     }
 
+    /* ── Skills grid ─────────────────────────────────────────────── */
+    .skills-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* ── Timeline ────────────────────────────────────────────────── */
+    .timeline-container {
+        gap: 30px;
+    }
+
+    /* RTL timeline: flip border side */
+    .timeline-col {
+        padding-left: 0;
+        padding-right: 20px;
+    }
+
+    [dir="rtl"] .timeline-col {
+        padding-right: 20px;
+        padding-left: 0;
+    }
+
+    [dir="ltr"] .timeline-col {
+        padding-left: 20px;
+        padding-right: 0;
+    }
+
+    .timeline-col::before {
+        left: auto;
+        right: 0;
+    }
+
+    [dir="ltr"] .timeline-col::before {
+        left: 0;
+        right: auto;
+    }
+
+    .timeline-dot {
+        left: auto;
+        right: -25px;
+    }
+
+    [dir="ltr"] .timeline-dot {
+        left: -25px;
+        right: auto;
+    }
+
+    /* ── Contact form ────────────────────────────────────────────── */
     .contact-form-wrapper {
         padding: 24px;
     }
 
+    /* ── Footer ──────────────────────────────────────────────────── */
     .footer-container {
         grid-template-columns: 1fr;
         gap: 30px;
     }
+
+    .footer {
+        padding: 40px 0 20px;
+    }
+
+    /* ── Section headers: respect text direction ─────────────────── */
+    .section-header {
+        max-width: 100%;
+        text-align: start;   /* logical: left in LTR, right in RTL */
+    }
+
+    [dir="ltr"] .section-header {
+        text-align: center;
+    }
+
+    .section-title::after {
+        margin: 12px 0 0 0;   /* flush to start edge on mobile */
+    }
+
+    [dir="ltr"] .section-title::after {
+        margin: 12px auto 0 auto;
+    }
+
+    /* ── Cards padding ───────────────────────────────────────────── */
+    .project-card,
+    .skills-card,
+    .certificate-card {
+        padding: 24px;
+    }
 }
+
+/* Extra-small screens */
+@media (max-width: 420px) {
+    .hero-cta {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hero-cta .btn {
+        justify-content: center;
+    }
+
+    .filter-controls {
+        gap: 8px;
+    }
+
+    .filter-btn {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+
+    .nav-actions .lang-label {
+        display: none; /* show only globe icon on tiny phones */
+    }
+
+    .image-wrapper {
+        width: 180px;
+        height: 180px;
+    }
+}
+
 
 /* ==========================================================================
    Google Apps Systems & Browser Simulator Styling
@@ -1302,7 +1484,7 @@ button, input, textarea {
 .gas-tab-item {
     display: flex;
     align-items: stretch;
-    text-align: right;
+    text-align: start; /* follows [dir] automatically */
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-md);
@@ -1340,8 +1522,8 @@ button, input, textarea {
 }
 
 .gas-tab-info {
-    padding-left: 8px;
-    text-align: right;
+    padding-inline-start: 8px;
+    text-align: start; /* logical property — right in RTL, left in LTR */
     width: 100%;
 }
 
@@ -1702,5 +1884,211 @@ button, input, textarea {
     }
 }
 
+/* ==========================================================================
+   Missing Utility Classes (used in company components)
+   ========================================================================== */
 
+/* Section badge/tag above section titles */
+.section-tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent-primary);
+    background-color: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 4px 14px;
+    border-radius: 30px;
+    margin-bottom: 12px;
+}
 
+/* Project card title/description aliases (used in CompanyPortfolio) */
+.project-title {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.project-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    flex-grow: 1;
+    line-height: 1.6;
+}
+
+.project-tag {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--accent-primary);
+    background-color: rgba(99, 102, 241, 0.08);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+/* Project link button (icon in card header) */
+.project-link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.project-link-btn:hover {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: #ffffff;
+    transform: scale(1.08);
+}
+
+/* Project card header row */
+.project-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.project-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--bg-tertiary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--accent-primary);
+    border: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
+   RTL-specific Overrides
+   ========================================================================== */
+
+/* Hero: reverse column order in RTL so image appears on the left */
+[dir="rtl"] .hero-container {
+    direction: rtl;
+}
+
+/* Contact links: align icons properly */
+[dir="rtl"] .contact-link-item {
+    flex-direction: row-reverse;
+}
+
+/* cert-link arrow direction */
+[dir="rtl"] .cert-link-btn:hover svg {
+    transform: translateX(-4px);
+}
+
+/* ==========================================================================
+   Contact Links Styles (used in new Contact layout)
+   ========================================================================== */
+.contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.contact-link-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.contact-link-item:hover {
+    border-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+    transform: translateY(-2px);
+}
+
+.contact-link-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--border-radius-sm);
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.contact-link-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.contact-link-value {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-all;
+}
+
+/* Ghost button variant */
+.btn-ghost {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-ghost:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Google Apps mobile breakpoint - additional small screen fixes
+   ========================================================================== */
+@media (max-width: 480px) {
+    .browser-mockup-frame {
+        height: 400px;
+    }
+
+    .browser-mockup-header {
+        grid-template-columns: 60px 1fr 40px;
+        padding: 8px 12px;
+    }
+
+    .browser-address-bar {
+        padding: 4px 10px;
+    }
+
+    .browser-url-text {
+        font-size: 0.65rem;
+    }
+
+    .gas-details-card {
+        padding: 16px;
+    }
+
+    .contact-form-wrapper {
+        padding: 18px;
+    }
+}

@@ -47,6 +47,11 @@ export default function Projects({ projects, lang, t }) {
 
                         return (
                             <div className="project-card" key={project.id}>
+                                {project.image && (
+                                    <div className="project-card-image-container">
+                                        <img src={project.image} alt={project.title} className="project-card-image" />
+                                    </div>
+                                )}
                                 <div className="project-card-header">
                                     <svg className="folder-icon" viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--accent-primary)" strokeWidth="1.5">
                                         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>

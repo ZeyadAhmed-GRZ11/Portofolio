@@ -33,6 +33,7 @@ const adminTranslations = {
         tabCompanyGeneral: 'بيانات الشركة',
         tabServices: 'الخدمات',
         tabPortfolio: 'أعمال الشركة',
+        tabCompanySystems: 'أنظمة البرمجيات',
 
         exportBtn: 'تصدير JSON',
         importBtn: 'استيراد JSON',
@@ -48,6 +49,7 @@ const adminTranslations = {
         headerCompanyGeneral: 'بيانات الشركة الرئيسية',
         headerServices: 'إدارة خدمات الشركة',
         headerPortfolio: 'إدارة أعمال ومشاريع الشركة',
+        headerCompanySystems: 'إدارة أنظمة البرمجيات للشركة',
 
         // Visibility
         visibilityHelp: 'أوقف أي قسم لإخفائه من الموقع والقائمة العلوية فوراً.',
@@ -59,6 +61,7 @@ const adminTranslations = {
         sectionContact: 'التواصل',
         sectionServices: 'الخدمات',
         sectionPortfolio: 'أعمال الشركة',
+        sectionCompanySystems: 'أنظمة الويب والبرمجيات',
 
         avatarTitle: '📷 صورة الملف الشخصي (Avatar)',
         avatarHelp: 'الصورة تُخزَّن محلياً في المتصفح. الحجم الأقصى 5MB. يُفضَّل صور مربعة.',
@@ -166,6 +169,15 @@ const adminTranslations = {
         portfolioDescEnLabel: 'وصف العمل (English)',
         portfolioUrlLabel: 'رابط العمل (اختياري)',
 
+        companySysListTitle: 'قائمة أنظمة الويب والبرمجيات',
+        addCompanySysBtn: 'إضافة نظام برمجيات جديد +',
+        editCompanySysTitle: 'تعديل نظام البرمجيات',
+        companySysTitleArLabel: 'عنوان النظام (عربي)',
+        companySysTitleEnLabel: 'عنوان النظام (English)',
+        companySysDescArLabel: 'الوصف الفني للنظام (عربي)',
+        companySysDescEnLabel: 'الوصف الفني للنظام (English)',
+        companySysUrlLabel: 'رابط نشر الخدمة (System URL)',
+
         exportJsonTitle: 'تصدير الكود JSON',
         exportHelp: 'انسخ هذا الكود بالكامل واستبدل به محتويات ملف src/data/portfolioData.js في مشروعك لتثبيت التعديلات للأبد.',
         copyClipboardBtn: 'نسخ إلى الحافظة',
@@ -208,6 +220,7 @@ const adminTranslations = {
         tabCompanyGeneral: 'Company Info',
         tabServices: 'Services',
         tabPortfolio: 'Company Work',
+        tabCompanySystems: 'Software Systems',
 
         exportBtn: 'Export JSON',
         importBtn: 'Import JSON',
@@ -223,6 +236,7 @@ const adminTranslations = {
         headerCompanyGeneral: 'Company Profile & Branding',
         headerServices: 'Manage Company Services',
         headerPortfolio: 'Manage Company Portfolio',
+        headerCompanySystems: 'Manage Company Web & Software Systems',
 
         // Visibility
         visibilityHelp: 'Toggle any section off to instantly hide it from the live site and navigation.',
@@ -234,6 +248,7 @@ const adminTranslations = {
         sectionContact: 'Contact',
         sectionServices: 'Services',
         sectionPortfolio: 'Company Portfolio',
+        sectionCompanySystems: 'Web & Software Systems',
 
         avatarTitle: '📷 Profile Picture (Avatar)',
         avatarHelp: 'Image stored locally in browser. Max size: 5MB. Square aspect recommended.',
@@ -341,6 +356,15 @@ const adminTranslations = {
         portfolioDescEnLabel: 'Work Description (English)',
         portfolioUrlLabel: 'Project URL (optional)',
 
+        companySysListTitle: 'Web & Software Systems List',
+        addCompanySysBtn: 'Add New System +',
+        editCompanySysTitle: 'Edit Software System',
+        companySysTitleArLabel: 'System Title (Arabic)',
+        companySysTitleEnLabel: 'System Title (English)',
+        companySysDescArLabel: 'System Description (Arabic)',
+        companySysDescEnLabel: 'System Description (English)',
+        companySysUrlLabel: 'Published System URL',
+
         exportJsonTitle: 'Export JSON Data',
         exportHelp: 'Copy this JSON block and paste it inside src/data/portfolioData.js to persist modifications permanently.',
         copyClipboardBtn: 'Copy to Clipboard',
@@ -364,10 +388,11 @@ const PERSONAL_SECTIONS = [
     { key: 'contact',    labelKey: 'sectionContact',    icon: '✉️' },
 ];
 const COMPANY_SECTIONS = [
-    { key: 'hero',      labelKey: 'sectionHero',      icon: '🏠' },
-    { key: 'services',  labelKey: 'sectionServices',  icon: '🔧' },
-    { key: 'portfolio', labelKey: 'sectionPortfolio', icon: '🗂️' },
-    { key: 'contact',   labelKey: 'sectionContact',   icon: '✉️' },
+    { key: 'hero',      labelKey: 'sectionHero',           icon: '🏠' },
+    { key: 'services',  labelKey: 'sectionServices',       icon: '🔧' },
+    { key: 'portfolio', labelKey: 'sectionPortfolio',      icon: '🗂️' },
+    { key: 'systems',   labelKey: 'sectionCompanySystems', icon: '⚙️' },
+    { key: 'contact',   labelKey: 'sectionContact',        icon: '✉️' },
 ];
 
 export default function AdminDashboard({ isOpen, onClose, appData, setAppData, onResetToDefault, lang }) {
@@ -387,12 +412,13 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
     const [importJsonText,  setImportJsonText]  = useState('');
     const [importError,     setImportError]     = useState('');
 
-    const [editingProject,   setEditingProject]   = useState(null);
-    const [editingGas,       setEditingGas]        = useState(null);
-    const [editingResume,    setEditingResume]     = useState(null);
-    const [resumeItemType,   setResumeItemType]    = useState('experience');
-    const [editingService,   setEditingService]    = useState(null);
-    const [editingPortfolio, setEditingPortfolio]  = useState(null);
+    const [editingProject,    setEditingProject]    = useState(null);
+    const [editingGas,        setEditingGas]        = useState(null);
+    const [editingResume,     setEditingResume]     = useState(null);
+    const [resumeItemType,    setResumeItemType]    = useState('experience');
+    const [editingService,    setEditingService]    = useState(null);
+    const [editingPortfolio,  setEditingPortfolio]  = useState(null);
+    const [editingCompanySys, setEditingCompanySys] = useState(null);
 
     const ad = adminTranslations[lang] || adminTranslations.ar;
 
@@ -426,7 +452,7 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
         setActiveTab(profileId === 'company' ? 'companyGeneral' : 'general');
         setEditingProject(null); setEditingGas(null);
         setEditingResume(null);  setEditingService(null);
-        setEditingPortfolio(null);
+        setEditingPortfolio(null); setEditingCompanySys(null);
     };
 
     // ── Login ─────────────────────────────────────────────────────
@@ -666,6 +692,32 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
         setProfileData(prev => ({ ...prev, portfolio: prev.portfolio.filter(x => x.id !== id) }));
     };
 
+    // ── Company Systems CRUD ──────────────────────────────────────
+    const handleSaveCompanySys = (e) => {
+        e.preventDefault();
+        const s = editingCompanySys;
+        if (!s.title.trim() || !s.url.trim()) return;
+        setProfileData(prev => {
+            let list = [...(prev.googleAppsSystems || [])];
+            if (s.id) {
+                list = list.map(item => item.id === s.id ? s : item);
+            } else {
+                const newId = `csys-${Date.now()}`;
+                list.push({ ...s, id: newId });
+            }
+            return { ...prev, googleAppsSystems: list };
+        });
+        setEditingCompanySys(null);
+    };
+
+    const handleDeleteCompanySys = (id) => {
+        if (!window.confirm(ad.confirmDeleteGas)) return;
+        setProfileData(prev => ({
+            ...prev,
+            googleAppsSystems: (prev.googleAppsSystems || []).filter(x => x.id !== id)
+        }));
+    };
+
     // ── Export / Import ───────────────────────────────────────────
     const handleCopyJson = () => {
         navigator.clipboard.writeText(JSON.stringify(appData, null, 4));
@@ -695,7 +747,7 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
         setActiveTab(tab);
         setEditingProject(null); setEditingGas(null);
         setEditingResume(null);  setEditingService(null);
-        setEditingPortfolio(null);
+        setEditingPortfolio(null); setEditingCompanySys(null);
     };
 
     // ─────────────────────────────────────────────────────────────
@@ -814,6 +866,7 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
                         <div className={`admin-menu-item ${activeTab === 'companyGeneral' ? 'active' : ''}`} onClick={() => goToTab('companyGeneral')}>{ad.tabCompanyGeneral}</div>
                         <div className={`admin-menu-item ${activeTab === 'services' ? 'active' : ''}`} onClick={() => goToTab('services')}>{ad.tabServices}</div>
                         <div className={`admin-menu-item ${activeTab === 'companyPortfolio' ? 'active' : ''}`} onClick={() => goToTab('companyPortfolio')}>{ad.tabPortfolio}</div>
+                        <div className={`admin-menu-item ${activeTab === 'companySystems' ? 'active' : ''}`} onClick={() => goToTab('companySystems')}>{ad.tabCompanySystems}</div>
                     </>)}
 
                     {/* Visibility — always visible */}
@@ -845,6 +898,7 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
                         {activeTab === 'companyGeneral'  && ad.headerCompanyGeneral}
                         {activeTab === 'services'        && ad.headerServices}
                         {activeTab === 'companyPortfolio' && ad.headerPortfolio}
+                        {activeTab === 'companySystems'   && ad.headerCompanySystems}
                     </h2>
                     <div className="admin-actions">
                         <button className="btn btn-primary" onClick={onClose}>{ad.saveCloseBtn}</button>
@@ -1494,6 +1548,72 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
                                         <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexDirection: isRtl ? 'row-reverse' : 'row' }}>
                                             <button type="submit" className="btn btn-primary">{ad.saveChangesBtn}</button>
                                             <button type="button" className="btn btn-secondary" onClick={() => setEditingPortfolio(null)}>{ad.cancelBtn}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* ══════════════════════════════════════════════
+                        TAB: COMPANY PORTFOLIO SYSTEMS
+                    ══════════════════════════════════════════════ */}
+                    {activeTab === 'companySystems' && isCompany && (
+                        <div>
+                            {!editingCompanySys ? (
+                                <div className="admin-section-card">
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexDirection: isRtl ? 'row-reverse' : 'row' }}>
+                                        <h3 style={{ margin: 0, fontWeight: 600 }}>{ad.companySysListTitle}</h3>
+                                        <button className="btn-admin-add" onClick={() => setEditingCompanySys({ title: '', title_en: '', description: '', description_en: '', url: '' })}>{ad.addCompanySysBtn}</button>
+                                    </div>
+                                    <div className="admin-items-list">
+                                        {(portfolioData.googleAppsSystems || []).map(sys => (
+                                            <div className="admin-item-row" key={sys.id} style={{ flexDirection: isRtl ? 'row-reverse' : 'row' }}>
+                                                <div className="admin-item-info" style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                                                    <h4>{lang === 'ar' ? (sys.title || sys.title_en) : (sys.title_en || sys.title)}</h4>
+                                                    <p style={{ wordBreak: 'break-all', direction: 'ltr' }}>{sys.url}</p>
+                                                </div>
+                                                <div className="admin-item-actions">
+                                                    <button className="btn-admin-icon edit" onClick={() => setEditingCompanySys(sys)}>
+                                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                    </button>
+                                                    <button className="btn-admin-icon delete" onClick={() => handleDeleteCompanySys(sys.id)}>
+                                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="admin-section-card">
+                                    <h3 className="admin-section-title">{editingCompanySys.id ? ad.editCompanySysTitle : ad.addCompanySysBtn}</h3>
+                                    <form onSubmit={handleSaveCompanySys}>
+                                        <div className="admin-form-grid">
+                                            <div className="admin-form-group">
+                                                <label>{ad.companySysTitleArLabel}</label>
+                                                <input type="text" value={editingCompanySys.title || ''} onChange={e => setEditingCompanySys({ ...editingCompanySys, title: e.target.value })} required />
+                                            </div>
+                                            <div className="admin-form-group">
+                                                <label>{ad.companySysTitleEnLabel}</label>
+                                                <input type="text" value={editingCompanySys.title_en || ''} onChange={e => setEditingCompanySys({ ...editingCompanySys, title_en: e.target.value })} dir="ltr" required />
+                                            </div>
+                                            <div className="admin-form-group full-width">
+                                                <label>{ad.companySysUrlLabel}</label>
+                                                <input type="url" value={editingCompanySys.url || ''} onChange={e => setEditingCompanySys({ ...editingCompanySys, url: e.target.value })} style={{ direction: 'ltr' }} required />
+                                            </div>
+                                            <div className="admin-form-group full-width">
+                                                <label>{ad.companySysDescArLabel}</label>
+                                                <textarea rows="3" value={editingCompanySys.description || ''} onChange={e => setEditingCompanySys({ ...editingCompanySys, description: e.target.value })} required />
+                                            </div>
+                                            <div className="admin-form-group full-width">
+                                                <label>{ad.companySysDescEnLabel}</label>
+                                                <textarea rows="3" value={editingCompanySys.description_en || ''} onChange={e => setEditingCompanySys({ ...editingCompanySys, description_en: e.target.value })} dir="ltr" required />
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexDirection: isRtl ? 'row-reverse' : 'row' }}>
+                                            <button type="submit" className="btn btn-primary">{ad.saveChangesBtn}</button>
+                                            <button type="button" className="btn btn-secondary" onClick={() => setEditingCompanySys(null)}>{ad.cancelBtn}</button>
                                         </div>
                                     </form>
                                 </div>

@@ -11,6 +11,7 @@ import AdminDashboard from './components/AdminDashboard';
 import CompanyHero from './components/company/CompanyHero';
 import CompanyServices from './components/company/CompanyServices';
 import CompanyPortfolio from './components/company/CompanyPortfolio';
+import CompanySystems from './components/company/CompanySystems';
 import { initialAppData, translations } from './data/portfolioData';
 
 // ─── Migration helper ────────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ function loadOrMigrateAppData() {
                 if (!parsed.profiles[key].sectionVisibility) {
                     parsed.profiles[key].sectionVisibility =
                         key === 'company'
-                            ? { hero: true, services: true, portfolio: true, contact: true }
+                            ? { hero: true, services: true, portfolio: true, systems: true, contact: true }
                             : { hero: true, projects: true, googleApps: true, skills: true, resume: true, contact: true };
                 }
             });
@@ -194,6 +195,27 @@ export default function App() {
     const personalProfile = appData.profiles.personal;
     const companyProfile  = appData.profiles.company;
 
+    // Convert personal projects to company portfolio items shape
+    const personalAsCompanyPortfolio = (personalProfile?.projects || []).map(p => {
+        const demoLink = p.links?.find(l => l.type === 'demo')?.url;
+        const githubLink = p.links?.find(l => l.type === 'github')?.url;
+        return {
+            id: `personal-${p.id}`,
+            title_ar: p.title,
+            title_en: p.title,
+            description_ar: p.description,
+            description_en: p.description_en || p.description,
+            tags: p.tags || [],
+            url: (demoLink && demoLink !== '#') ? demoLink : ((githubLink && githubLink !== '#') ? githubLink : '#'),
+            isPersonal: true
+        };
+    });
+
+    const mergedCompanyPortfolio = [
+        ...(companyProfile?.portfolio || []),
+        ...personalAsCompanyPortfolio
+    ];
+
     return (
         <>
             <div className="glow glow-1"></div>
@@ -229,7 +251,8 @@ export default function App() {
                     <>
                         {visibility.hero      && <CompanyHero data={companyProfile.hero} lang={lang} t={t} />}
                         {visibility.services   && <CompanyServices services={companyProfile.services} lang={lang} t={t} />}
-                        {visibility.portfolio   && <CompanyPortfolio portfolio={companyProfile.portfolio} lang={lang} t={t} />}
+                        {visibility.portfolio   && <CompanyPortfolio portfolio={mergedCompanyPortfolio} lang={lang} t={t} />}
+                        {visibility.systems    && <CompanySystems systems={companyProfile.googleAppsSystems} lang={lang} t={t} />}
                         {visibility.contact    && <Contact contact={companyProfile.contact} settings={companyProfile.settings} lang={lang} t={t} isCompany={true} />}
                     </>
                 )}

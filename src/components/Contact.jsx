@@ -88,7 +88,7 @@ export default function Contact({ contact, settings, lang, t, isCompany }) {
                     <p className="section-subtitle">{ct.subtitle}</p>
                 </div>
 
-                <div className="contact-wrapper">
+                <div className="contact-grid">
                     {/* Info Panel */}
                     <div className="contact-info">
                         <h3 style={{ textAlign: isRtl ? 'right' : 'left' }}>{ct.connect}</h3>
