@@ -133,6 +133,17 @@ export default function App() {
         localStorage.setItem('appData', JSON.stringify(appData));
     }, [appData]);
 
+    // ── Dynamic Page Title ────────────────────────────────────────
+    useEffect(() => {
+        if (isCompany) {
+            const companyName = companyProfile?.hero?.name || 'Tech Titans';
+            document.title = `${companyName}`;
+        } else {
+            const ownerName = personalProfile?.hero?.name || 'Zeyad Ahmed';
+            document.title = `${ownerName} | Desktop & Web Developer Portfolio`;
+        }
+    }, [activeProfile, companyProfile?.hero?.name, personalProfile?.hero?.name]);
+
     useEffect(() => {
         localStorage.setItem('lang', lang);
         document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
