@@ -17,7 +17,9 @@ import { initialAppData, translations } from './data/portfolioData';
 // If the user has the OLD portfolioData key in localStorage, migrate it into
 // the new profiles.personal slot and remove the old key.
 function loadOrMigrateAppData() {
-    const savedNew = localStorage.getItem('appData');
+    const data = initialAppData;
+    let loaded = null;
+
     if (savedNew) {
         try {
             const parsed = JSON.parse(savedNew);
@@ -35,39 +37,53 @@ function loadOrMigrateAppData() {
                             : { hero: true, projects: true, googleApps: true, skills: true, resume: true, contact: true };
                 }
             });
-            return parsed;
+            loaded = parsed;
         } catch (e) {
             console.error('Error parsing appData from localStorage', e);
         }
-    }
-
-    // Legacy migration: old portfolioData key
-    const savedOld = localStorage.getItem('portfolioData');
-    if (savedOld) {
-        try {
-            const oldData = JSON.parse(savedOld);
-            const migrated = {
-                ...initialAppData,
-                profiles: {
-                    ...initialAppData.profiles,
-                    personal: {
-                        ...initialAppData.profiles.personal,
-                        ...oldData,
-                        // Ensure new fields exist
-                        meta: initialAppData.profiles.personal.meta,
-                        sectionVisibility: initialAppData.profiles.personal.sectionVisibility,
-                        settings: oldData.settings || { web3FormsKey: '' }
+    } else {
+        // Legacy migration: old portfolioData key
+        const savedOld = localStorage.getItem('portfolioData');
+        if (savedOld) {
+            try {
+                const oldData = JSON.parse(savedOld);
+                const migrated = {
+                    ...initialAppData,
+                    profiles: {
+                        ...initialAppData.profiles,
+                        personal: {
+                            ...initialAppData.profiles.personal,
+                            ...oldData,
+                            // Ensure new fields exist
+                            meta: initialAppData.profiles.personal.meta,
+                            sectionVisibility: initialAppData.profiles.personal.sectionVisibility,
+                            settings: oldData.settings || { web3FormsKey: '' }
+                        }
                     }
-                }
-            };
-            localStorage.removeItem('portfolioData');
-            return migrated;
-        } catch (e) {
-            console.error('Error migrating old portfolioData', e);
+                };
+                localStorage.removeItem('portfolioData');
+                loaded = migrated;
+            } catch (e) {
+                console.error('Error migrating old portfolioData', e);
+            }
         }
     }
 
-    return initialAppData;
+    const finalData = loaded || { ...initialAppData };
+
+    // ── Hostname-based Detection ──
+    // If domain contains "techtitans" or "tech-titans", force "company" profile.
+    // If it contains "zeyad", force "personal" profile.
+    if (typeof window !== 'undefined' && window.location) {
+        const host = window.location.hostname.toLowerCase();
+        if (host.includes('techtitans') || host.includes('tech-titans')) {
+            finalData.activeProfile = 'company';
+        } else if (host.includes('zeyad')) {
+            finalData.activeProfile = 'personal';
+        }
+    }
+
+    return finalData;
 }
 
 export default function App() {
