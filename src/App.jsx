@@ -72,14 +72,21 @@ function loadOrMigrateAppData() {
     const finalData = loaded || { ...initialAppData };
 
     // ── Hostname-based Detection ──
-    // If domain contains "techtitans" or "tech-titans", force "company" profile.
-    // If it contains "zeyad", force "personal" profile.
+    // Enforce profile based on domain ONLY for regular visitors (not authenticated admins)
+    // Also support URL query params (e.g. ?profile=company) for easy testing/previewing
     if (typeof window !== 'undefined' && window.location) {
         const host = window.location.hostname.toLowerCase();
-        if (host.includes('techtitans') || host.includes('tech-titans')) {
-            finalData.activeProfile = 'company';
-        } else if (host.includes('zeyad')) {
-            finalData.activeProfile = 'personal';
+        const searchParams = new URLSearchParams(window.location.search);
+        const profileParam = searchParams.get('profile');
+
+        const isAdmin = sessionStorage.getItem('isAdminAuthenticated') === 'true';
+
+        if (!isAdmin) {
+            if (profileParam === 'company' || profileParam === 'techtitans' || host.includes('techtitans') || host.includes('tech-titans')) {
+                finalData.activeProfile = 'company';
+            } else if (profileParam === 'personal' || profileParam === 'zeyad' || host.includes('zeyad')) {
+                finalData.activeProfile = 'personal';
+            }
         }
     }
 
