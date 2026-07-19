@@ -43,8 +43,10 @@ export const translations = {
             title: 'السيرة الذاتية / المسيرة المهنية',
             subtitle: 'ملخص للخبرات المهنية، والتعليم الأكاديمي، والشهادات المعتمدة.',
             experience: 'الخبرات المهنية',
-            education: 'التعليم والشهادات',
-            download: 'تحميل السيرة الذاتية (PDF)'
+            education: 'التعليم الأكاديمي',
+            certificates: 'الشهادات المعتمدة',
+            download: 'تحميل السيرة الذاتية (PDF)',
+            view_cert: 'التحقق من الشهادة'
         },
         contact: {
             title: 'تواصل معي',
@@ -115,8 +117,10 @@ export const translations = {
             title: 'Resume / Career Journey',
             subtitle: 'Summary of professional experience, academic education, and validated certifications.',
             experience: 'Professional Experience',
-            education: 'Education & Certifications',
-            download: 'Download CV (PDF)'
+            education: 'Academic Education',
+            certificates: 'Certificates & Credentials',
+            download: 'Download CV (PDF)',
+            view_cert: 'Verify Certificate'
         },
         contact: {
             title: 'Get In Touch',
@@ -298,7 +302,24 @@ export const initialPortfolioData = {
                 org: "معتمدة من المؤسسات التقنية الدولية",
                 desc: "إتقان كتابة الاستعلامات المعقدة، وتحسين أداء فهارس الجداول، وبرمجة الإجراءات المخزنة والمحفزات."
             }
-        ]
+        ],
+        certificates: [
+            {
+                id: "cert-1",
+                date: "2025",
+                title: "شهادة أتمتة الأعمال المتقدمة - Apps Script",
+                org: "مؤسسة تطوير Google Apps",
+                url: "https://script.google.com"
+            },
+            {
+                id: "cert-2",
+                date: "2024",
+                title: "تطوير الويب المتكامل (Full-Stack React & Node)",
+                org: "أكاديمية البرمجة العالمية",
+                url: "https://github.com"
+            }
+        ],
+        cvPdfBase64: null
     },
     contact: {
         email: "zeyadahmedsamier@gmail.com",

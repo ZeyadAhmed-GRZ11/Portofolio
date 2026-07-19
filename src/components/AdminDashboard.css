@@ -510,7 +510,23 @@
         white-space: nowrap;
     }
     .admin-sidebar-footer {
-        display: none; /* Hide bottom actions on mobile sidebar, put them elsewhere */
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+    .admin-sidebar-footer .btn {
+        flex: 1 1 120px;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    .admin-sidebar-footer .admin-login-close {
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
     }
     .admin-form-grid {
         grid-template-columns: 1fr;
@@ -522,3 +538,16 @@
         padding: 20px;
     }
 }
+
+/* RTL overrides for Admin Dashboard */
+[dir="rtl"] .admin-sidebar {
+    border-right: none;
+    border-left: 1px solid var(--border-color);
+}
+[dir="rtl"] .admin-skill-percentage {
+    text-align: left;
+}
+[dir="rtl"] .admin-item-row:hover {
+    transform: translateX(-4px);
+}
+

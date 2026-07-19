@@ -49,11 +49,21 @@ export default function Resume({ resume, lang, t }) {
     }, []);
 
     const handleDownload = (e) => {
-        e.preventDefault();
-        const msg = isRtl
-            ? 'نسخة السيرة الذاتية (PDF) غير متوفرة حالياً، يمكنك تعديل وتصدير البيانات من لوحة التحكم.'
-            : 'PDF CV is not available yet. You can export data from the Admin Panel.';
-        alert(msg);
+        if (resume && resume.cvPdfBase64) {
+            // Download PDF
+            const link = document.createElement('a');
+            link.href = resume.cvPdfBase64;
+            link.download = isRtl ? 'السيرة_الذاتية_زياد_أحمد.pdf' : 'Zeyad_Ahmed_CV.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            e.preventDefault();
+            const msg = isRtl
+                ? 'نسخة السيرة الذاتية (PDF) غير متوفرة حالياً، يمكنك تعديل وتصدير البيانات من لوحة التحكم.'
+                : 'PDF CV is not available yet. You can export data from the Admin Panel.';
+            alert(msg);
+        }
     };
 
     if (!resume) return null;
@@ -122,6 +132,62 @@ export default function Resume({ resume, lang, t }) {
                         ))}
                     </div>
                 </div>
+
+                {/* Certificates Section */}
+                {resume.certificates && resume.certificates.length > 0 && (
+                    <div className="certificates-wrapper" style={{ marginTop: '60px', textAlign: isRtl ? 'right' : 'left' }}>
+                        <h3 className="timeline-heading" style={{ 
+                            flexDirection: isRtl ? 'row-reverse' : 'row', 
+                            justifyContent: isRtl ? 'flex-start' : 'flex-start',
+                            marginBottom: '30px'
+                        }}>
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--accent-primary)" strokeWidth="2.5" style={{ marginLeft: isRtl ? '10px' : 0, marginRight: isRtl ? 0 : '10px' }}>
+                                <circle cx="12" cy="8" r="7"></circle>
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                            </svg>
+                            {t.resume.certificates}
+                        </h3>
+
+                        <div className="certificates-grid">
+                            {resume.certificates.map(cert => (
+                                <div key={cert.id} className="certificate-card">
+                                    <div className="cert-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexDirection: isRtl ? 'row-reverse' : 'row' }}>
+                                        <span className="cert-date">{cert.date}</span>
+                                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--accent-secondary)" strokeWidth="1.5">
+                                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                            <path d="M7 12l3 3 7-7"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 className="cert-title">{cert.title}</h4>
+                                    <p className="cert-org">{cert.org}</p>
+                                    {cert.url && (
+                                        <a 
+                                            href={cert.url} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="cert-link-btn"
+                                            style={{ 
+                                                marginTop: '16px', 
+                                                display: 'inline-flex', 
+                                                alignItems: 'center', 
+                                                gap: '6px', 
+                                                fontSize: '0.85rem',
+                                                fontWeight: 600,
+                                                color: 'var(--accent-primary)'
+                                            }}
+                                        >
+                                            {t.resume.view_cert}
+                                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: isRtl ? 'rotate(180deg)' : 'none' }}>
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                <polyline points="12 5 19 12 12 19"></polyline>
+                                            </svg>
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div
                     ref={downloadBtnRef}
