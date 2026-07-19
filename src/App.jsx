@@ -8,14 +8,74 @@ import Resume from './components/Resume';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AdminDashboard from './components/AdminDashboard';
-import { initialPortfolioData, translations } from './data/portfolioData';
+import CompanyHero from './components/company/CompanyHero';
+import CompanyServices from './components/company/CompanyServices';
+import CompanyPortfolio from './components/company/CompanyPortfolio';
+import { initialAppData, translations } from './data/portfolioData';
+
+// ─── Migration helper ────────────────────────────────────────────────────────
+// If the user has the OLD portfolioData key in localStorage, migrate it into
+// the new profiles.personal slot and remove the old key.
+function loadOrMigrateAppData() {
+    const savedNew = localStorage.getItem('appData');
+    if (savedNew) {
+        try {
+            const parsed = JSON.parse(savedNew);
+            // Ensure both profiles exist (forward-compat guard)
+            if (!parsed.profiles) parsed.profiles = {};
+            if (!parsed.profiles.personal) parsed.profiles.personal = initialAppData.profiles.personal;
+            if (!parsed.profiles.company)  parsed.profiles.company  = initialAppData.profiles.company;
+            if (!parsed.activeProfile)     parsed.activeProfile      = 'personal';
+            // Ensure sectionVisibility exists on each profile
+            Object.keys(parsed.profiles).forEach(key => {
+                if (!parsed.profiles[key].sectionVisibility) {
+                    parsed.profiles[key].sectionVisibility =
+                        key === 'company'
+                            ? { hero: true, services: true, portfolio: true, contact: true }
+                            : { hero: true, projects: true, googleApps: true, skills: true, resume: true, contact: true };
+                }
+            });
+            return parsed;
+        } catch (e) {
+            console.error('Error parsing appData from localStorage', e);
+        }
+    }
+
+    // Legacy migration: old portfolioData key
+    const savedOld = localStorage.getItem('portfolioData');
+    if (savedOld) {
+        try {
+            const oldData = JSON.parse(savedOld);
+            const migrated = {
+                ...initialAppData,
+                profiles: {
+                    ...initialAppData.profiles,
+                    personal: {
+                        ...initialAppData.profiles.personal,
+                        ...oldData,
+                        // Ensure new fields exist
+                        meta: initialAppData.profiles.personal.meta,
+                        sectionVisibility: initialAppData.profiles.personal.sectionVisibility,
+                        settings: oldData.settings || { web3FormsKey: '' }
+                    }
+                }
+            };
+            localStorage.removeItem('portfolioData');
+            return migrated;
+        } catch (e) {
+            console.error('Error migrating old portfolioData', e);
+        }
+    }
+
+    return initialAppData;
+}
 
 export default function App() {
-    // Theme Management
+    // ── Theme ────────────────────────────────────────────────────
     const getInitialTheme = () => {
-        const cachedTheme = localStorage.getItem('theme');
-        const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-        if (cachedTheme === 'light' || (!cachedTheme && systemPrefersLight)) return 'light';
+        const cached = localStorage.getItem('theme');
+        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        if (cached === 'light' || (!cached && prefersLight)) return 'light';
         return 'dark';
     };
 
@@ -23,52 +83,31 @@ export default function App() {
     const [activeSection, setActiveSection] = useState('home');
     const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'ar');
 
-    // Dynamic Portfolio Data State
-    const [portfolioData, setPortfolioData] = useState(() => {
-        const saved = localStorage.getItem('portfolioData');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                // Migrate: ensure settings exists
-                if (!parsed.settings) parsed.settings = { web3FormsKey: '' };
-                return parsed;
-            } catch (e) {
-                console.error("Error parsing portfolioData from localStorage", e);
-            }
-        }
-        return initialPortfolioData;
-    });
-
+    // ── App Data (single source of truth) ────────────────────────
+    const [appData, setAppData] = useState(loadOrMigrateAppData);
     const [isAdminOpen, setIsAdminOpen] = useState(false);
+
+    // Derived helpers
+    const activeProfile   = appData.activeProfile;
+    const currentProfile  = appData.profiles[activeProfile];
+    const visibility      = currentProfile?.sectionVisibility || {};
+    const isCompany       = activeProfile === 'company';
 
     // Current language dictionary
     const t = translations[lang] || translations.ar;
 
-    // Persist data on changes
+    // ── Persistence ───────────────────────────────────────────────
     useEffect(() => {
-        localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
-    }, [portfolioData]);
+        localStorage.setItem('appData', JSON.stringify(appData));
+    }, [appData]);
 
-    // Persist language on changes + set html dir
     useEffect(() => {
         localStorage.setItem('lang', lang);
         document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
         document.documentElement.setAttribute('lang', lang);
     }, [lang]);
 
-    const toggleLang = () => setLang(prev => prev === 'ar' ? 'en' : 'ar');
-
-    const handleResetToDefault = () => {
-        if (window.confirm(lang === 'ar'
-            ? 'هل تريد فعلاً إعادة تعيين كافة البيانات إلى الحالة الافتراضية؟'
-            : 'Are you sure you want to reset all data to defaults?')) {
-            setPortfolioData(initialPortfolioData);
-            localStorage.removeItem('portfolioData');
-            alert(lang === 'ar' ? 'تمت إعادة التعيين بنجاح.' : 'Reset successful.');
-        }
-    };
-
-    // Theme toggle
+    // ── Theme ─────────────────────────────────────────────────────
     useEffect(() => {
         const body = document.body;
         if (theme === 'light') {
@@ -82,8 +121,21 @@ export default function App() {
     }, [theme]);
 
     const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    const toggleLang  = () => setLang(prev => prev === 'ar' ? 'en' : 'ar');
 
-    // Scrollspy
+    // ── Reset ─────────────────────────────────────────────────────
+    const handleResetToDefault = () => {
+        const msg = lang === 'ar'
+            ? 'هل تريد فعلاً إعادة تعيين كافة البيانات إلى الحالة الافتراضية؟'
+            : 'Are you sure you want to reset all data to defaults?';
+        if (window.confirm(msg)) {
+            setAppData(initialAppData);
+            localStorage.removeItem('appData');
+            alert(lang === 'ar' ? 'تمت إعادة التعيين بنجاح.' : 'Reset successful.');
+        }
+    };
+
+    // ── Scrollspy ─────────────────────────────────────────────────
     useEffect(() => {
         const sections = document.querySelectorAll('section');
         const observer = new IntersectionObserver((entries) => {
@@ -91,10 +143,13 @@ export default function App() {
                 if (entry.isIntersecting) setActiveSection(entry.target.getAttribute('id'));
             });
         }, { root: null, rootMargin: '-20% 0px -60% 0px', threshold: 0 });
-
         sections.forEach(s => observer.observe(s));
         return () => sections.forEach(s => observer.unobserve(s));
-    }, []);
+    }, [activeProfile]); // re-run when profile switches (different sections appear)
+
+    // ── Render ────────────────────────────────────────────────────
+    const personalProfile = appData.profiles.personal;
+    const companyProfile  = appData.profiles.company;
 
     return (
         <>
@@ -109,29 +164,48 @@ export default function App() {
                 lang={lang}
                 toggleLang={toggleLang}
                 t={t}
+                isCompany={isCompany}
+                visibility={visibility}
             />
 
             <main>
-                <Hero data={portfolioData.hero} lang={lang} t={t} />
-                <Projects projects={portfolioData.projects} lang={lang} t={t} />
-                <GoogleAppsSystems systems={portfolioData.googleAppsSystems} lang={lang} t={t} />
-                <Skills skills={portfolioData.skills} lang={lang} t={t} />
-                <Resume resume={portfolioData.resume} lang={lang} t={t} />
-                <Contact contact={portfolioData.contact} settings={portfolioData.settings} lang={lang} t={t} />
+                {/* ── PERSONAL PROFILE SECTIONS ─────────────────── */}
+                {!isCompany && (
+                    <>
+                        {visibility.hero      && <Hero data={personalProfile.hero} lang={lang} t={t} />}
+                        {visibility.projects   && <Projects projects={personalProfile.projects} lang={lang} t={t} />}
+                        {visibility.googleApps && <GoogleAppsSystems systems={personalProfile.googleAppsSystems} lang={lang} t={t} />}
+                        {visibility.skills     && <Skills skills={personalProfile.skills} lang={lang} t={t} />}
+                        {visibility.resume     && <Resume resume={personalProfile.resume} lang={lang} t={t} />}
+                        {visibility.contact    && <Contact contact={personalProfile.contact} settings={personalProfile.settings} lang={lang} t={t} />}
+                    </>
+                )}
+
+                {/* ── COMPANY PROFILE SECTIONS ──────────────────── */}
+                {isCompany && (
+                    <>
+                        {visibility.hero      && <CompanyHero data={companyProfile.hero} lang={lang} t={t} />}
+                        {visibility.services   && <CompanyServices services={companyProfile.services} lang={lang} t={t} />}
+                        {visibility.portfolio   && <CompanyPortfolio portfolio={companyProfile.portfolio} lang={lang} t={t} />}
+                        {visibility.contact    && <Contact contact={companyProfile.contact} settings={companyProfile.settings} lang={lang} t={t} isCompany={true} />}
+                    </>
+                )}
             </main>
 
             <Footer
-                contact={portfolioData.contact}
+                contact={currentProfile?.contact}
                 onAdminOpen={() => setIsAdminOpen(true)}
                 lang={lang}
                 t={t}
+                isCompany={isCompany}
+                companyName={companyProfile?.hero?.name}
             />
 
             <AdminDashboard
                 isOpen={isAdminOpen}
                 onClose={() => setIsAdminOpen(false)}
-                portfolioData={portfolioData}
-                setPortfolioData={setPortfolioData}
+                appData={appData}
+                setAppData={setAppData}
                 onResetToDefault={handleResetToDefault}
                 lang={lang}
             />

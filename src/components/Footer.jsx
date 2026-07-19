@@ -1,22 +1,39 @@
 import React from 'react';
 
-export default function Footer({ contact, onAdminOpen, lang, t }) {
+export default function Footer({ contact, onAdminOpen, lang, t, isCompany, companyName }) {
     const isRtl = lang === 'ar';
 
-    const navLinks = [
-        { href: '#home', label: t.nav.home },
-        { href: '#projects', label: t.nav.projects },
-        { href: '#google-apps', label: t.nav.googleApps },
-        { href: '#skills', label: t.nav.skills },
-        { href: '#resume', label: t.nav.resume },
-        { href: '#contact', label: t.nav.contact }
+    const personalLinks = [
+        { href: '#hero',       label: t.nav.home },
+        { href: '#projects',   label: t.nav.projects },
+        { href: '#google-apps',label: t.nav.googleApps },
+        { href: '#skills',     label: t.nav.skills },
+        { href: '#resume',     label: t.nav.resume },
+        { href: '#contact',    label: t.nav.contact },
     ];
+
+    const companyLinks = [
+        { href: '#hero',      label: t.nav.home },
+        { href: '#services',  label: t.nav.services },
+        { href: '#portfolio', label: t.nav.portfolio },
+        { href: '#contact',   label: t.nav.contact },
+    ];
+
+    const navLinks = isCompany ? companyLinks : personalLinks;
+
+    const logoText = isCompany
+        ? <><span className="logo-accent">&#60;</span>{companyName || 'TechTitans'}<span className="logo-accent">/&#62;</span></>
+        : <><span className="logo-accent">&#60;</span>Zeyad.Dev<span className="logo-accent">/&#62;</span></>;
+
+    const ownerText = isCompany
+        ? (lang === 'ar' ? `© ${new Date().getFullYear()} ${companyName || 'Tech Titans'}.` : `© ${new Date().getFullYear()} ${companyName || 'Tech Titans'}.`)
+        : `© ${new Date().getFullYear()} Zeyad Ahmed.`;
 
     return (
         <footer className="footer">
             <div className="container footer-container" style={{ direction: isRtl ? 'rtl' : 'ltr', textAlign: isRtl ? 'right' : 'left' }}>
                 <div className="footer-brand">
-                    <a href="#home" className="logo"><span className="logo-accent">&lt;</span>Zeyad.Dev<span className="logo-accent">/&gt;</span></a>
+                    <a href="#hero" className="logo">{logoText}</a>
                     <p>{t.footer.desc}</p>
                 </div>
                 <div className="footer-links">
@@ -30,7 +47,7 @@ export default function Footer({ contact, onAdminOpen, lang, t }) {
             </div>
             <div className="footer-bottom">
                 <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', direction: isRtl ? 'rtl' : 'ltr' }}>
-                    <p>&copy; {new Date().getFullYear()} Zeyad Ahmed. {t.footer.rights}</p>
+                    <p>{ownerText} {t.footer.rights}</p>
                     <p style={{ display: 'flex', gap: '15px' }}>
                         <span
                             onClick={onAdminOpen}

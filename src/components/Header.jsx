@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Header({ activeSection, theme, toggleTheme, onAdminOpen, lang, toggleLang, t }) {
+export default function Header({ activeSection, theme, toggleTheme, onAdminOpen, lang, toggleLang, t, isCompany, visibility }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [logoClicks, setLogoClicks] = useState(0);
@@ -12,7 +12,6 @@ export default function Header({ activeSection, theme, toggleTheme, onAdminOpen,
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Freeze background scroll when mobile menu is active
     useEffect(() => {
         document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
@@ -29,24 +28,43 @@ export default function Header({ activeSection, theme, toggleTheme, onAdminOpen,
             setLogoClicks(0);
             onAdminOpen();
         } else {
-            document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
-    const navLinks = [
-        { id: 'home', label: t.nav.home },
-        { id: 'projects', label: t.nav.projects },
-        { id: 'google-apps', label: t.nav.googleApps },
-        { id: 'skills', label: t.nav.skills },
-        { id: 'resume', label: t.nav.resume },
-        { id: 'contact', label: t.nav.contact }
+    // ── Build nav links based on active profile & section visibility ──
+    const vis = visibility || {};
+
+    const personalLinks = [
+        { id: 'hero',        sectionKey: 'hero',       label: t.nav.home },
+        { id: 'projects',    sectionKey: 'projects',   label: t.nav.projects },
+        { id: 'google-apps', sectionKey: 'googleApps', label: t.nav.googleApps },
+        { id: 'skills',      sectionKey: 'skills',     label: t.nav.skills },
+        { id: 'resume',      sectionKey: 'resume',     label: t.nav.resume },
+        { id: 'contact',     sectionKey: 'contact',    label: t.nav.contact },
     ];
+
+    const companyLinks = [
+        { id: 'hero',      sectionKey: 'hero',      label: t.nav.home },
+        { id: 'services',  sectionKey: 'services',  label: t.nav.services },
+        { id: 'portfolio', sectionKey: 'portfolio', label: t.nav.portfolio },
+        { id: 'contact',   sectionKey: 'contact',   label: t.nav.contact },
+    ];
+
+    const allLinks = isCompany ? companyLinks : personalLinks;
+    // Only show links whose section is visible (or where visibility key is undefined → default show)
+    const navLinks = allLinks.filter(link => vis[link.sectionKey] !== false);
+
+    // Logo text switches per profile
+    const logoText = isCompany
+        ? <><span className="logo-accent">&#60;</span>TechTitans<span className="logo-accent">/&#62;</span></>
+        : <><span className="logo-accent">&#60;</span>Zeyad.Dev<span className="logo-accent">/&#62;</span></>;
 
     return (
         <header className={`navbar ${isScrolled ? 'scrolled' : ''}`} id="navbar">
             <div className="nav-container">
-                <a href="#home" className="logo" id="logo-link" onClick={handleLogoClick}>
-                    <span className="logo-accent">&lt;</span>Zeyad.Dev<span className="logo-accent">/&gt;</span>
+                <a href="#hero" className="logo" id="logo-link" onClick={handleLogoClick}>
+                    {logoText}
                 </a>
 
                 <nav className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`} id="nav-menu">
@@ -63,7 +81,7 @@ export default function Header({ activeSection, theme, toggleTheme, onAdminOpen,
                 </nav>
 
                 <div className="nav-actions">
-                    {/* Language Toggle Button */}
+                    {/* Language Toggle */}
                     <button
                         className="lang-toggle"
                         id="lang-toggle"
@@ -81,7 +99,7 @@ export default function Header({ activeSection, theme, toggleTheme, onAdminOpen,
                         <span className="lang-label">{lang === 'ar' ? 'EN' : 'عر'}</span>
                     </button>
 
-                    {/* Theme Toggle Button */}
+                    {/* Theme Toggle */}
                     <button
                         className="theme-toggle"
                         id="theme-toggle"
@@ -98,7 +116,7 @@ export default function Header({ activeSection, theme, toggleTheme, onAdminOpen,
                         </svg>
                     </button>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile Menu Toggle */}
                     <button
                         className={`mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
                         id="mobile-toggle"
@@ -107,7 +125,7 @@ export default function Header({ activeSection, theme, toggleTheme, onAdminOpen,
                     >
                         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="4" y1="12" x2="20" y2="12" className="line-mid"></line>
-                            <line x1="4" y1="6" x2="20" y2="6" className="line-top"></line>
+                            <line x1="4" y1="6"  x2="20" y2="6"  className="line-top"></line>
                             <line x1="4" y1="18" x2="20" y2="18" className="line-bot"></line>
                         </svg>
                     </button>

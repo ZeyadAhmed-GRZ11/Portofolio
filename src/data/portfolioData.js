@@ -1,5 +1,6 @@
 // ============================================================
 // Bilingual Dictionary (Arabic & English)
+// Covers: Personal portfolio + Tech Titans company site
 // ============================================================
 export const translations = {
     ar: {
@@ -9,7 +10,10 @@ export const translations = {
             googleApps: 'أنظمة Google Apps',
             skills: 'المهارات',
             resume: 'السيرة الذاتية',
-            contact: 'اتصل بي'
+            contact: 'اتصل بي',
+            // Company nav
+            services: 'الخدمات',
+            portfolio: 'أعمالنا',
         },
         hero: {
             tagline: 'مرحباً بك، أنا',
@@ -74,6 +78,22 @@ export const translations = {
             rights: 'جميع الحقوق محفوظة.',
             built: 'صنع بحب باستخدام React & Vite',
             admin: 'لوحة التحكم'
+        },
+        // Company-specific translations
+        company: {
+            hero_tagline: 'نبني المستقبل الرقمي',
+            hero_cta_services: 'استعرض خدماتنا',
+            hero_cta_portfolio: 'أعمالنا',
+            hero_cta_contact: 'تواصل معنا',
+            services_title: 'خدماتنا',
+            services_subtitle: 'نقدم حلولاً برمجية متكاملة تلبي احتياجات الشركات والأعمال.',
+            portfolio_title: 'أعمالنا ومشاريعنا',
+            portfolio_subtitle: 'نماذج من المشاريع التي نفذناها لعملائنا في مختلف القطاعات.',
+            contact_title: 'تواصل مع Tech Titans',
+            contact_subtitle: 'هل لديك مشروع في ذهنك؟ تحدث إلينا وسنساعدك على تحويل فكرتك إلى واقع.',
+            connect: 'تواصل مع الفريق',
+            view_details: 'عرض التفاصيل',
+            learn_more: 'اعرف المزيد',
         }
     },
     en: {
@@ -83,7 +103,10 @@ export const translations = {
             googleApps: 'Google Apps',
             skills: 'Skills',
             resume: 'Resume',
-            contact: 'Contact'
+            contact: 'Contact',
+            // Company nav
+            services: 'Services',
+            portfolio: 'Portfolio',
         },
         hero: {
             tagline: 'Hi, I am',
@@ -148,182 +171,324 @@ export const translations = {
             rights: 'All Rights Reserved.',
             built: 'Built with love using React & Vite',
             admin: 'Admin Panel'
+        },
+        // Company-specific translations
+        company: {
+            hero_tagline: 'We Build the Digital Future',
+            hero_cta_services: 'Our Services',
+            hero_cta_portfolio: 'Our Work',
+            hero_cta_contact: 'Get In Touch',
+            services_title: 'Our Services',
+            services_subtitle: 'We deliver end-to-end software solutions tailored to every business need.',
+            portfolio_title: 'Our Work & Projects',
+            portfolio_subtitle: 'A selection of projects we have delivered for clients across various industries.',
+            contact_title: 'Contact Tech Titans',
+            contact_subtitle: "Have a project in mind? Talk to us and we'll help you turn your idea into reality.",
+            connect: 'Connect With Our Team',
+            view_details: 'View Details',
+            learn_more: 'Learn More',
         }
     }
 };
 
 // ============================================================
-// Default Portfolio Data
+// Section visibility defaults per profile type
 // ============================================================
-export const initialPortfolioData = {
-    hero: {
-        tagline: 'مرحباً بك، أنا',
-        name: "Zeyad Ahmed",
-        title: "Full-Stack Developer & Google Apps Script Expert",
-        description: "أقوم بتصميم وتطوير أنظمة الويب المتكاملة، وتطوير قواعد البيانات المتقدمة، وبناء حلول الأتمتة المبتكرة باستخدام بيئة Google Apps Script. أمتلك خبرة واسعة في التقنيات الحديثة وقدرة على دمج الأنظمة البرمجية لتقديم واجهات سريعة وحلول خلفية آمنة.",
-        description_en: "I design and develop integrated web applications, build scalable database solutions, and create business automation systems using Google Apps Script. I have hands-on experience with modern web technologies, including HTML, CSS, JavaScript, PHP, Node.js, and Google Workspace. I focus on developing secure backend systems, responsive user interfaces, and workflow automation that improve business efficiency and simplify daily operations.",
-        resumeUrl: "#",
-        avatarBase64: null
-    },
-    settings: {
-        web3FormsKey: ""
-    },
-    skills: [
-        {
-            category: "Frontend Development",
-            items: [
-                { name: "HTML5 / CSS3 Layouts", level: 95 },
-                { name: "JavaScript (ES6+) / React", level: 92 },
-                { name: "Next.js (App Router)", level: 88 },
-                { name: "Responsive UI & Bootstrap", level: 90 }
-            ]
-        },
-        {
-            category: "Backend Development",
-            items: [
-                { name: "PHP & Laravel Framework", level: 93 },
-                { name: "Node.js & Express", level: 88 },
-                { name: "Python Automation & Scripting", level: 85 },
-                { name: "Clerk Authentication", level: 87 }
-            ]
-        },
-        {
-            category: "Database Systems",
-            items: [
-                { name: "MySQL & PostgreSQL", level: 92 },
-                { name: "Prisma ORM", level: 86 },
-                { name: "Oracle SQL & PL/SQL", level: 85 },
-                { name: "MongoDB (NoSQL)", level: 80 },
-                { name: "Supabase (BaaS)", level: 90 }
-            ]
-        }
-    ],
-    googleAppsSystems: [
-        {
-            id: "gas-1",
-            title: "نظام إدارة وأتمتة الأعمال الذكي",
-            description: "نظام متكامل مبني بالكامل على Google Apps Script يقوم بربط جداول البيانات والتقارير وإرسال رسائل بريد إلكتروني وتنبيهات مؤتمتة وإصدار فواتير PDF وتتبع المبيعات والمهام في الوقت الفعلي مع واجهة مستخدم تفاعلية متجاوبة.",
-            url: "https://script.google.com/macros/s/AKfycbyH2dlAjFTuBP_wheM6SglaeqWs1fjPqD0OtcczWYtaaUmAcW2tJg2kni4UgY9sEnTdxw/exec"
-        },
-        {
-            id: "gas-2",
-            title: "نظام تتبع وإدارة سير العمل والمهام المشتركة",
-            description: "لوحة تحكم برمجية تفاعلية لعرض العمليات وتتبع إنجاز المهام للفرق والمشاريع. يتصل بقواعد البيانات الداخلية وجداول جوجل مع تفعيل التنبيهات المباشرة وتقارير الأداء الآلية للمستخدمين والمشرفين.",
-            url: "https://script.google.com/macros/s/AKfycby8zvbTvTloUoDmhWYUTPgexnnnbgYYwtRYSEUy75zQstnoJt7dhrDgpY3q91NVsr--/exec"
-        }
-    ],
-    projects: [
-        {
-            id: 1,
-            title: "Code Zone — منصة المطورين والمبرمجين",
-            description: "منصة تقنية متكاملة مصممة خصيصاً للمبرمجين والمطورين تُمكّنهم من مشاركة مشاريعهم، التواصل مع بعضهم، وعرض مهاراتهم البرمجية في بيئة احترافية. تم بناؤها باستخدام Next.js لأداء عالي وSEO مثالي، وPrisma ORM للتعامل مع قاعدة بيانات PostgreSQL بكفاءة، وClerk لنظام مصادقة آمن ومتكامل يدعم الدخول بحسابات GitHub وGoogle. تقدم المنصة واجهة مستخدم احترافية مع لوحة تحكم متكاملة، إدارة المشاريع، والبحث الذكي بين المطورين.",
-            description_en: "A full-featured developer platform built exclusively for programmers and developers to share projects, connect with each other, and showcase their coding skills in a professional environment. Built with Next.js for high performance and optimal SEO, Prisma ORM for efficient PostgreSQL database interactions, and Clerk for a secure authentication system supporting GitHub and Google sign-in. The platform offers a professional UI with a full dashboard, project management, and smart developer search.",
-            categories: ["web", "database"],
-            tags: ["Next.js", "Prisma", "Clerk", "PostgreSQL", "TypeScript"],
-            links: [
-                { type: "demo", text: "Live Demo", url: "https://code-zone-opal.vercel.app/" },
-                { type: "github", text: "GitHub", url: "#" }
-            ]
-        },
-        {
-            id: 2,
-            title: "منصة التجارة الإلكترونية المتكاملة",
-            description: "تطبيق ويب متكامل لمتجر إلكتروني حديث يشتمل على لوحة تحكم كاملة للمشرفين، ونظام سلة تسوق وإدارة المدفوعات، وإصدار الفواتير التلقائية.",
-            description_en: "A full-stack e-commerce web application featuring a complete admin dashboard, shopping cart, payment management, and automated invoicing built with Laravel and MySQL.",
-            categories: ["web", "database"],
-            tags: ["PHP", "Laravel", "MySQL", "Bootstrap"],
-            links: [
-                { type: "github", text: "GitHub", url: "#" }
-            ]
-        },
-        {
-            id: 3,
-            title: "نظام إدارة الموارد واللوجستيات",
-            description: "لوحة تحكم تفاعلية لرصد مستويات المخزون وحركة الشحنات مع ربطها بخدمات Supabase للمصادقة وتدفق البيانات الفوري.",
-            description_en: "An interactive dashboard for real-time inventory monitoring and shipment tracking, connected to Supabase for authentication and live data streaming.",
-            categories: ["web", "database"],
-            tags: ["Node.js", "Express", "PostgreSQL", "Supabase"],
-            links: [
-                { type: "github", text: "GitHub", url: "#" }
-            ]
-        },
-        {
-            id: 4,
-            title: "أداة نقل وتحليل البيانات الضخمة",
-            description: "برنامج أتمتة مكتوب بلغة Python يقوم بسحب وتنظيف البيانات وتصديرها من قواعد بيانات Oracle SQL إلى قواعد بيانات PostgreSQL الحديثة.",
-            description_en: "A Python automation tool that extracts, cleans, and migrates data from Oracle SQL databases to modern PostgreSQL environments with automated data integrity reports.",
-            categories: ["database"],
-            tags: ["Python", "Oracle SQL", "PostgreSQL", "Data Migration"],
-            links: [
-                { type: "private", text: "Private Project", tooltip: "Proprietary project for corporate clients" }
-            ]
-        },
-        {
-            id: 5,
-            title: "تطبيق إدارة العيادات والمواعيد الطبي",
-            description: "تطبيق ويب متقدم لتسجيل المرضى وحجز المواعيد ومتابعة ملفاتهم الطبية مع تخزين آمن وسريع للسجلات مبني باستخدام React وMongoDB.",
-            description_en: "An advanced web app for patient registration, appointment booking, and medical record tracking with secure storage built using React and MongoDB.",
-            categories: ["web", "database"],
-            tags: ["React", "Node.js", "MongoDB", "Express"],
-            links: [
-                { type: "github", text: "GitHub", url: "#" }
-            ]
-        }
-    ],
-    resume: {
-        experience: [
-            {
-                id: "exp-1",
-                date: "2025 - الحاضر",
-                title: "مطور برمجيات مستقل (Full-Stack Freelancer)",
-                org: "العمل الحر والتعاقدات الخاصة",
-                desc: "تطوير وبناء تطبيقات الويب المتكاملة، وتصميم أنظمة أتمتة متقدمة للشركات باستخدام Google Apps Script، وتدشين وتحديث قواعد البيانات وتحسين أدائها."
+const defaultPersonalVisibility = {
+    hero: true,
+    projects: true,
+    googleApps: true,
+    skills: true,
+    resume: true,
+    contact: true
+};
+
+const defaultCompanyVisibility = {
+    hero: true,
+    services: true,
+    portfolio: true,
+    contact: true
+};
+
+// ============================================================
+// Unified App Data — Single Source of Truth
+// ============================================================
+export const initialAppData = {
+    // Which profile is currently active
+    activeProfile: 'personal',
+
+    profiles: {
+        // --------------------------------------------------------
+        // Profile 1: Personal Developer Portfolio (Zeyad Ahmed)
+        // --------------------------------------------------------
+        personal: {
+            meta: {
+                id: 'personal',
+                type: 'personal',
+                label_ar: 'ملفي الشخصي',
+                label_en: 'My Portfolio'
             },
-            {
-                id: "exp-2",
-                date: "2024 (تدريب صيفي)",
-                title: "مطور تطبيقات ويب متدرب",
-                org: "شركة الحلول التقنية المتقدمة WebTech",
-                desc: "المشاركة في تطوير لوحات التحكم وإدارة المخازن باستخدام Laravel وNode.js، مع تصميم جداول قواعد البيانات في PostgreSQL وMySQL."
-            }
-        ],
-        education: [
-            {
-                id: "edu-1",
-                date: "2021 - 2025",
-                title: "بكالوريوس علوم الحاسب وهندسة البرمجيات",
-                org: "كلية الحاسبات والمعلومات",
-                desc: "التركيز على هندسة البرمجيات، تصميم نظم قواعد البيانات العلاقية، وهياكل البيانات والخوارزميات، وتطوير الويب المتكامل."
+            sectionVisibility: { ...defaultPersonalVisibility },
+            hero: {
+                tagline: 'مرحباً بك، أنا',
+                name: 'Zeyad Ahmed',
+                title: 'Full-Stack Developer & Google Apps Script Expert',
+                description: 'أقوم بتصميم وتطوير أنظمة الويب المتكاملة، وتطوير قواعد البيانات المتقدمة، وبناء حلول الأتمتة المبتكرة باستخدام بيئة Google Apps Script. أمتلك خبرة واسعة في التقنيات الحديثة وقدرة على دمج الأنظمة البرمجية لتقديم واجهات سريعة وحلول خلفية آمنة.',
+                description_en: 'I design and develop integrated web applications, build scalable database solutions, and create business automation systems using Google Apps Script. I have hands-on experience with modern web technologies, including HTML, CSS, JavaScript, PHP, Node.js, and Google Workspace. I focus on developing secure backend systems, responsive user interfaces, and workflow automation that improve business efficiency and simplify daily operations.',
+                resumeUrl: '#',
+                avatarBase64: null
             },
-            {
-                id: "edu-2",
-                date: "2025",
-                title: "شهادة مصادقة في إدارة قواعد البيانات SQL",
-                org: "معتمدة من المؤسسات التقنية الدولية",
-                desc: "إتقان كتابة الاستعلامات المعقدة، وتحسين أداء فهارس الجداول، وبرمجة الإجراءات المخزنة والمحفزات."
-            }
-        ],
-        certificates: [
-            {
-                id: "cert-1",
-                date: "2025",
-                title: "شهادة أتمتة الأعمال المتقدمة - Apps Script",
-                org: "مؤسسة تطوير Google Apps",
-                url: "https://script.google.com"
+            settings: {
+                web3FormsKey: ''
             },
-            {
-                id: "cert-2",
-                date: "2024",
-                title: "تطوير الويب المتكامل (Full-Stack React & Node)",
-                org: "أكاديمية البرمجة العالمية",
-                url: "https://github.com"
+            skills: [
+                {
+                    category: 'Frontend Development',
+                    items: [
+                        { name: 'HTML5 / CSS3 Layouts', level: 95 },
+                        { name: 'JavaScript (ES6+) / React', level: 92 },
+                        { name: 'Next.js (App Router)', level: 88 },
+                        { name: 'Responsive UI & Bootstrap', level: 90 }
+                    ]
+                },
+                {
+                    category: 'Backend Development',
+                    items: [
+                        { name: 'PHP & Laravel Framework', level: 93 },
+                        { name: 'Node.js & Express', level: 88 },
+                        { name: 'Python Automation & Scripting', level: 85 },
+                        { name: 'Clerk Authentication', level: 87 }
+                    ]
+                },
+                {
+                    category: 'Database Systems',
+                    items: [
+                        { name: 'MySQL & PostgreSQL', level: 92 },
+                        { name: 'Prisma ORM', level: 86 },
+                        { name: 'Oracle SQL & PL/SQL', level: 85 },
+                        { name: 'MongoDB (NoSQL)', level: 80 },
+                        { name: 'Supabase (BaaS)', level: 90 }
+                    ]
+                }
+            ],
+            googleAppsSystems: [
+                {
+                    id: 'gas-1',
+                    title: 'نظام إدارة وأتمتة الأعمال الذكي',
+                    description: 'نظام متكامل مبني بالكامل على Google Apps Script يقوم بربط جداول البيانات والتقارير وإرسال رسائل بريد إلكتروني وتنبيهات مؤتمتة وإصدار فواتير PDF وتتبع المبيعات والمهام في الوقت الفعلي مع واجهة مستخدم تفاعلية متجاوبة.',
+                    url: 'https://script.google.com/macros/s/AKfycbyH2dlAjFTuBP_wheM6SglaeqWs1fjPqD0OtcczWYtaaUmAcW2tJg2kni4UgY9sEnTdxw/exec'
+                },
+                {
+                    id: 'gas-2',
+                    title: 'نظام تتبع وإدارة سير العمل والمهام المشتركة',
+                    description: 'لوحة تحكم برمجية تفاعلية لعرض العمليات وتتبع إنجاز المهام للفرق والمشاريع. يتصل بقواعد البيانات الداخلية وجداول جوجل مع تفعيل التنبيهات المباشرة وتقارير الأداء الآلية للمستخدمين والمشرفين.',
+                    url: 'https://script.google.com/macros/s/AKfycby8zvbTvTloUoDmhWYUTPgexnnnbgYYwtRYSEUy75zQstnoJt7dhrDgpY3q91NVsr--/exec'
+                }
+            ],
+            projects: [
+                {
+                    id: 1,
+                    title: 'Code Zone — منصة المطورين والمبرمجين',
+                    description: 'منصة تقنية متكاملة مصممة خصيصاً للمبرمجين والمطورين تُمكّنهم من مشاركة مشاريعهم، التواصل مع بعضهم، وعرض مهاراتهم البرمجية في بيئة احترافية. تم بناؤها باستخدام Next.js لأداء عالي وSEO مثالي، وPrisma ORM للتعامل مع قاعدة بيانات PostgreSQL بكفاءة، وClerk لنظام مصادقة آمن ومتكامل يدعم الدخول بحسابات GitHub وGoogle.',
+                    description_en: 'A full-featured developer platform built exclusively for programmers and developers to share projects, connect with each other, and showcase their coding skills in a professional environment. Built with Next.js for high performance and optimal SEO, Prisma ORM for efficient PostgreSQL database interactions, and Clerk for a secure authentication system supporting GitHub and Google sign-in.',
+                    categories: ['web', 'database'],
+                    tags: ['Next.js', 'Prisma', 'Clerk', 'PostgreSQL', 'TypeScript'],
+                    links: [
+                        { type: 'demo', text: 'Live Demo', url: 'https://code-zone-opal.vercel.app/' },
+                        { type: 'github', text: 'GitHub', url: '#' }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: 'منصة التجارة الإلكترونية المتكاملة',
+                    description: 'تطبيق ويب متكامل لمتجر إلكتروني حديث يشتمل على لوحة تحكم كاملة للمشرفين، ونظام سلة تسوق وإدارة المدفوعات، وإصدار الفواتير التلقائية.',
+                    description_en: 'A full-stack e-commerce web application featuring a complete admin dashboard, shopping cart, payment management, and automated invoicing built with Laravel and MySQL.',
+                    categories: ['web', 'database'],
+                    tags: ['PHP', 'Laravel', 'MySQL', 'Bootstrap'],
+                    links: [{ type: 'github', text: 'GitHub', url: '#' }]
+                },
+                {
+                    id: 3,
+                    title: 'نظام إدارة الموارد واللوجستيات',
+                    description: 'لوحة تحكم تفاعلية لرصد مستويات المخزون وحركة الشحنات مع ربطها بخدمات Supabase للمصادقة وتدفق البيانات الفوري.',
+                    description_en: 'An interactive dashboard for real-time inventory monitoring and shipment tracking, connected to Supabase for authentication and live data streaming.',
+                    categories: ['web', 'database'],
+                    tags: ['Node.js', 'Express', 'PostgreSQL', 'Supabase'],
+                    links: [{ type: 'github', text: 'GitHub', url: '#' }]
+                },
+                {
+                    id: 4,
+                    title: 'أداة نقل وتحليل البيانات الضخمة',
+                    description: 'برنامج أتمتة مكتوب بلغة Python يقوم بسحب وتنظيف البيانات وتصديرها من قواعد بيانات Oracle SQL إلى قواعد بيانات PostgreSQL الحديثة.',
+                    description_en: 'A Python automation tool that extracts, cleans, and migrates data from Oracle SQL databases to modern PostgreSQL environments with automated data integrity reports.',
+                    categories: ['database'],
+                    tags: ['Python', 'Oracle SQL', 'PostgreSQL', 'Data Migration'],
+                    links: [{ type: 'private', text: 'Private Project', tooltip: 'Proprietary project for corporate clients' }]
+                },
+                {
+                    id: 5,
+                    title: 'تطبيق إدارة العيادات والمواعيد الطبي',
+                    description: 'تطبيق ويب متقدم لتسجيل المرضى وحجز المواعيد ومتابعة ملفاتهم الطبية مع تخزين آمن وسريع للسجلات مبني باستخدام React وMongoDB.',
+                    description_en: 'An advanced web app for patient registration, appointment booking, and medical record tracking with secure storage built using React and MongoDB.',
+                    categories: ['web', 'database'],
+                    tags: ['React', 'Node.js', 'MongoDB', 'Express'],
+                    links: [{ type: 'github', text: 'GitHub', url: '#' }]
+                }
+            ],
+            resume: {
+                experience: [
+                    {
+                        id: 'exp-1',
+                        date: '2025 - الحاضر',
+                        title: 'مطور برمجيات مستقل (Full-Stack Freelancer)',
+                        org: 'العمل الحر والتعاقدات الخاصة',
+                        desc: 'تطوير وبناء تطبيقات الويب المتكاملة، وتصميم أنظمة أتمتة متقدمة للشركات باستخدام Google Apps Script، وتدشين وتحديث قواعد البيانات وتحسين أدائها.'
+                    },
+                    {
+                        id: 'exp-2',
+                        date: '2024 (تدريب صيفي)',
+                        title: 'مطور تطبيقات ويب متدرب',
+                        org: 'شركة الحلول التقنية المتقدمة WebTech',
+                        desc: 'المشاركة في تطوير لوحات التحكم وإدارة المخازن باستخدام Laravel وNode.js، مع تصميم جداول قواعد البيانات في PostgreSQL وMySQL.'
+                    }
+                ],
+                education: [
+                    {
+                        id: 'edu-1',
+                        date: '2021 - 2025',
+                        title: 'بكالوريوس علوم الحاسب وهندسة البرمجيات',
+                        org: 'كلية الحاسبات والمعلومات',
+                        desc: 'التركيز على هندسة البرمجيات، تصميم نظم قواعد البيانات العلاقية، وهياكل البيانات والخوارزميات، وتطوير الويب المتكامل.'
+                    },
+                    {
+                        id: 'edu-2',
+                        date: '2025',
+                        title: 'شهادة مصادقة في إدارة قواعد البيانات SQL',
+                        org: 'معتمدة من المؤسسات التقنية الدولية',
+                        desc: 'إتقان كتابة الاستعلامات المعقدة، وتحسين أداء فهارس الجداول، وبرمجة الإجراءات المخزنة والمحفزات.'
+                    }
+                ],
+                certificates: [
+                    {
+                        id: 'cert-1',
+                        date: '2025',
+                        title: 'شهادة أتمتة الأعمال المتقدمة - Apps Script',
+                        org: 'مؤسسة تطوير Google Apps',
+                        url: 'https://script.google.com'
+                    },
+                    {
+                        id: 'cert-2',
+                        date: '2024',
+                        title: 'تطوير الويب المتكامل (Full-Stack React & Node)',
+                        org: 'أكاديمية البرمجة العالمية',
+                        url: 'https://github.com'
+                    }
+                ],
+                cvPdfBase64: null
+            },
+            contact: {
+                email: 'zeyadahmedsamier@gmail.com',
+                linkedin: 'https://www.linkedin.com/in/zeyad-ahmed-samir',
+                github: 'https://github.com/ZeyadAhmed-GRZ11'
             }
-        ],
-        cvPdfBase64: null
-    },
-    contact: {
-        email: "zeyadahmedsamier@gmail.com",
-        linkedin: "https://www.linkedin.com/in/zeyad-ahmed-samir",
-        github: "https://github.com/ZeyadAhmed-GRZ11"
+        },
+
+        // --------------------------------------------------------
+        // Profile 2: Tech Titans — Software House Company Site
+        // --------------------------------------------------------
+        company: {
+            meta: {
+                id: 'company',
+                type: 'company',
+                label_ar: 'Tech Titans',
+                label_en: 'Tech Titans'
+            },
+            sectionVisibility: { ...defaultCompanyVisibility },
+            hero: {
+                name: 'Tech Titans',
+                tagline_ar: 'نبني المستقبل الرقمي',
+                tagline_en: 'We Build the Digital Future',
+                description_ar: 'شركة تقنية متخصصة في تطوير البرمجيات المؤسسية، وبناء المنصات الرقمية، وأتمتة العمليات التجارية. نقدم حلولاً متكاملة للشركات والمؤسسات الراغبة في التحول الرقمي باستخدام أحدث التقنيات والأطر البرمجية.',
+                description_en: 'A technology company specializing in enterprise software development, digital platform engineering, and business process automation. We deliver end-to-end solutions for organizations looking to accelerate their digital transformation using cutting-edge technologies.',
+                logoBase64: null
+            },
+            settings: {
+                web3FormsKey: ''
+            },
+            services: [
+                {
+                    id: 'svc-1',
+                    icon: 'code',
+                    title_ar: 'تطوير تطبيقات الويب',
+                    title_en: 'Web Application Development',
+                    description_ar: 'بناء تطبيقات ويب متكاملة وعالية الأداء باستخدام React، Next.js، Node.js، وLaravel.',
+                    description_en: 'Building high-performance, full-stack web applications using React, Next.js, Node.js, and Laravel.'
+                },
+                {
+                    id: 'svc-2',
+                    icon: 'database',
+                    title_ar: 'هندسة قواعد البيانات',
+                    title_en: 'Database Engineering',
+                    description_ar: 'تصميم وبناء قواعد البيانات العلاقية والـ NoSQL وتحسين أدائها وتكاملها مع الأنظمة المختلفة.',
+                    description_en: 'Designing and building relational and NoSQL databases, optimizing performance and integrating them with diverse systems.'
+                },
+                {
+                    id: 'svc-3',
+                    icon: 'automation',
+                    title_ar: 'أتمتة الأعمال والعمليات',
+                    title_en: 'Business Process Automation',
+                    description_ar: 'تطوير أنظمة أتمتة ذكية باستخدام Google Apps Script وPython وAPIs لتحسين كفاءة العمليات.',
+                    description_en: 'Developing smart automation systems using Google Apps Script, Python, and APIs to boost operational efficiency.'
+                },
+                {
+                    id: 'svc-4',
+                    icon: 'cloud',
+                    title_ar: 'الحلول السحابية والتكامل',
+                    title_en: 'Cloud Solutions & Integration',
+                    description_ar: 'نشر وإدارة التطبيقات على البنية التحتية السحابية مع ضمان التكامل السلس بين الأنظمة المختلفة.',
+                    description_en: 'Deploying and managing applications on cloud infrastructure with seamless integration between systems.'
+                }
+            ],
+            portfolio: [
+                {
+                    id: 'port-1',
+                    title_ar: 'منصة إدارة الأعمال الذكية',
+                    title_en: 'Smart Business Management Platform',
+                    description_ar: 'نظام متكامل لإدارة العمليات والتقارير والفواتير يخدم أكثر من 50 شركة.',
+                    description_en: 'An integrated system for managing operations, reports, and invoicing serving 50+ businesses.',
+                    tags: ['React', 'Node.js', 'PostgreSQL', 'Google Apps Script'],
+                    url: '#'
+                },
+                {
+                    id: 'port-2',
+                    title_ar: 'منظومة الرعاية الصحية الرقمية',
+                    title_en: 'Digital Healthcare Platform',
+                    description_ar: 'تطبيق ويب لإدارة العيادات والمواعيد والسجلات الطبية مع أمان بيانات عالي المستوى.',
+                    description_en: 'A web app for managing clinics, appointments, and medical records with enterprise-grade data security.',
+                    tags: ['Next.js', 'Prisma', 'Supabase', 'TypeScript'],
+                    url: '#'
+                },
+                {
+                    id: 'port-3',
+                    title_ar: 'نظام إدارة سلسلة التوريد',
+                    title_en: 'Supply Chain Management System',
+                    description_ar: 'حل رقمي متكامل لتتبع المخزون والشحنات وإدارة الموردين في الوقت الفعلي.',
+                    description_en: 'A comprehensive digital solution for real-time inventory tracking, shipment management, and vendor relations.',
+                    tags: ['Laravel', 'MySQL', 'React', 'REST APIs'],
+                    url: '#'
+                }
+            ],
+            contact: {
+                email: 'hello@techtitans.dev',
+                linkedin: 'https://www.linkedin.com/company/tech-titans',
+                github: 'https://github.com/TechTitans',
+                website: 'https://techtitans.dev'
+            }
+        }
     }
 };
+
+// ============================================================
+// Legacy alias — keeps backward compatibility if needed
+// ============================================================
+export const initialPortfolioData = initialAppData.profiles.personal;

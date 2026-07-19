@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 
-export default function Contact({ contact, settings, lang, t }) {
+export default function Contact({ contact, settings, lang, t, isCompany }) {
     const isRtl = lang === 'ar';
-    const ct = t.contact;
+    // Use company-specific contact labels when in company mode
+    const ct = isCompany
+        ? {
+            ...t.contact,
+            title:    t.company?.contact_title    || t.contact.title,
+            subtitle: t.company?.contact_subtitle || t.contact.subtitle,
+            connect:  t.company?.connect          || t.contact.connect,
+          }
+        : t.contact;
 
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [errors, setErrors] = useState({});
@@ -111,7 +119,7 @@ export default function Contact({ contact, settings, lang, t }) {
                                     </div>
                                     <div>
                                         <span className="contact-link-label">{ct.linkedin_label}</span>
-                                        <span className="contact-link-value">linkedin.com/in/zeyad-ahmed-samir</span>
+                                        <span className="contact-link-value">{contact.linkedin.replace('https://', '').replace('http://', '')}</span>
                                     </div>
                                 </a>
                             )}
@@ -125,7 +133,7 @@ export default function Contact({ contact, settings, lang, t }) {
                                     </div>
                                     <div>
                                         <span className="contact-link-label">{ct.github_label}</span>
-                                        <span className="contact-link-value">github.com/ZeyadAhmed-GRZ11</span>
+                                        <span className="contact-link-value">{contact.github.replace('https://', '').replace('http://', '')}</span>
                                     </div>
                                 </a>
                             )}
