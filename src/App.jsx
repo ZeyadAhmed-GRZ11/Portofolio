@@ -17,7 +17,7 @@ import { initialAppData, translations } from './data/portfolioData';
 // If the user has the OLD portfolioData key in localStorage, migrate it into
 // the new profiles.personal slot and remove the old key.
 function loadOrMigrateAppData() {
-    const data = initialAppData;
+    const savedNew = localStorage.getItem('appData');
     let loaded = null;
 
     if (savedNew) {
