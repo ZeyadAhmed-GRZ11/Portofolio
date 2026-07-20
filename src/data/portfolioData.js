@@ -171,7 +171,7 @@ export const translations = {
             phone_label: 'Phone Number',
             phone_placeholder: 'Enter your phone number (e.g. +201xxxxxxxxx)',
             message_label: 'Message',
-            message_placeholder: "Hi Zeyad, I'd like to collaborate on...",
+            message_placeholder: "Hi, I'd like to collaborate on...",
             send: 'Send Message',
             success: 'Your message was sent successfully! Thank you.',
             error: 'An error occurred. Please try again.',
