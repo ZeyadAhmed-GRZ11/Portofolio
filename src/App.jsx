@@ -19,37 +19,27 @@ import { supabase, isSupabaseConfigured } from './supabaseClient';
 // If the user has the OLD portfolioData key in localStorage, migrate it into
 // the new profiles.personal slot and remove the old key.
 function loadOrMigrateAppData() {
-    // On localhost without Supabase configured, always start fresh from initialAppData
-    // (avoid stale cached data from old localStorage sessions)
     const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const isAdminLogged = localStorage.getItem('portfolio_admin_logged') === 'true';
+    const isAdminAuth   = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('isAdminAuthenticated') === 'true';
+    const isAdmin       = isAdminLogged || isAdminAuth;
 
-    // Non-admins get clean initialAppData — Supabase will overwrite this if configured
-    if (!isAdminLogged) {
-        const finalData = { ...initialAppData };
-        if (typeof window !== 'undefined' && window.location) {
-            const host = window.location.hostname.toLowerCase();
-            const searchParams = new URLSearchParams(window.location.search);
-            let profileParam = searchParams.get('profile');
+    // ── Non-admin visitors: always show company, no exceptions ────
+    if (!isAdmin) {
+        const finalData = { ...initialAppData, activeProfile: 'company' };
 
-            if (!profileParam && window.location.hash.includes('?')) {
-                const hashQuery = window.location.hash.split('?')[1];
-                if (hashQuery) {
-                    const hashParams = new URLSearchParams(hashQuery);
-                    profileParam = hashParams.get('profile');
-                }
-            }
-
-            if (profileParam === 'company' || profileParam === 'techtitans' || host.includes('techtitans') || host.includes('tech-titans')) {
-                finalData.activeProfile = 'company';
-            } else if (profileParam === 'personal' || profileParam === 'zeyad' || host.includes('zeyad')) {
-                finalData.activeProfile = 'personal';
-            }
-            // On localhost without a param, default to personal
-            else if (isDev) {
-                finalData.activeProfile = 'personal';
-            }
+        // Strip any ?profile= param from URL so visitors can't see or copy it
+        if (typeof window !== 'undefined' && window.history && window.location.search.includes('profile')) {
+            const clean = window.location.pathname + window.location.hash.split('?')[0];
+            window.history.replaceState({}, '', clean);
         }
+
+        // Allow company domain aliases to still load company (future-proofing)
+        const host = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
+        if (host.includes('techtitans') || host.includes('tech-titans')) {
+            finalData.activeProfile = 'company';
+        }
+
         return finalData;
     }
 
@@ -107,7 +97,7 @@ function loadOrMigrateAppData() {
 
     const finalData = loaded || { ...initialAppData };
 
-    // ── Hostname-based Detection ──
+    // ── Admin: respect URL param or keep what was stored ──────────
     if (typeof window !== 'undefined' && window.location) {
         const host = window.location.hostname.toLowerCase();
         const searchParams = new URLSearchParams(window.location.search);
@@ -121,14 +111,10 @@ function loadOrMigrateAppData() {
             }
         }
 
-        const isAdminAuth = sessionStorage.getItem('isAdminAuthenticated') === 'true';
-
-        if (!isAdminAuth) {
-            if (profileParam === 'company' || profileParam === 'techtitans' || host.includes('techtitans') || host.includes('tech-titans')) {
-                finalData.activeProfile = 'company';
-            } else if (profileParam === 'personal' || profileParam === 'zeyad' || host.includes('zeyad')) {
-                finalData.activeProfile = 'personal';
-            }
+        if (profileParam === 'company' || profileParam === 'techtitans' || host.includes('techtitans') || host.includes('tech-titans')) {
+            finalData.activeProfile = 'company';
+        } else if (profileParam === 'personal' || profileParam === 'zeyad' || host.includes('zeyad')) {
+            finalData.activeProfile = 'personal';
         }
     }
 
@@ -196,8 +182,18 @@ export default function App() {
                             }
                         }
 
-                        const isAdminAuth = sessionStorage.getItem('isAdminAuthenticated') === 'true';
-                        if (!isAdminAuth) {
+                        const isAdminLogged = localStorage.getItem('portfolio_admin_logged') === 'true';
+                        const isAdminAuth   = sessionStorage.getItem('isAdminAuthenticated') === 'true';
+                        const isAdmin       = isAdminLogged || isAdminAuth;
+
+                        if (!isAdmin) {
+                            profileData.activeProfile = 'company';
+                            // Strip any ?profile= param from URL so visitors can't see or copy it
+                            if (window.history && window.location.search.includes('profile')) {
+                                const clean = window.location.pathname + window.location.hash.split('?')[0];
+                                window.history.replaceState({}, '', clean);
+                            }
+                        } else {
                             if (profileParam === 'company' || profileParam === 'techtitans' || host.includes('techtitans') || host.includes('tech-titans')) {
                                 profileData.activeProfile = 'company';
                             } else if (profileParam === 'personal' || profileParam === 'zeyad' || host.includes('zeyad')) {
