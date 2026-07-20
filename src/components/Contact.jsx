@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { supabase, isSupabaseConfigured } from '../supabaseClient';
 
 export default function Contact({ contact, settings, lang, t, isCompany }) {
     const isRtl = lang === 'ar';
@@ -12,7 +13,7 @@ export default function Contact({ contact, settings, lang, t, isCompany }) {
           }
         : t.contact;
 
-    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
     const [errors, setErrors] = useState({});
     const [status, setStatus] = useState('idle'); // idle | loading | success | error
 
@@ -20,6 +21,7 @@ export default function Contact({ contact, settings, lang, t, isCompany }) {
         const newErrors = {};
         if (!formData.name.trim()) newErrors.name = ct.err_name;
         if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = ct.err_email;
+        if (isCompany && !formData.phone.trim()) newErrors.phone = ct.err_phone;
         if (!formData.message.trim()) newErrors.message = ct.err_message;
         return newErrors;
     };
@@ -39,41 +41,65 @@ export default function Contact({ contact, settings, lang, t, isCompany }) {
         }
 
         const apiKey = settings?.web3FormsKey?.trim();
-        if (!apiKey) {
-            alert(isRtl
-                ? 'مفتاح Web3Forms غير مضبوط. يرجى إعداده من لوحة التحكم.'
-                : 'Web3Forms API key is not configured. Please set it in the Admin Panel.');
+        // If neither Supabase nor Web3Forms is configured, show error in-form (no alert popup)
+        if (!apiKey && !isSupabaseConfigured) {
+            setStatus('error');
             return;
         }
 
         setStatus('loading');
 
-        try {
-            const response = await fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({
-                    access_key: apiKey,
-                    name: formData.name,
-                    email: formData.email,
-                    message: formData.message,
-                    subject: isRtl
-                        ? `رسالة جديدة من ${formData.name} عبر Portfolio`
-                        : `New message from ${formData.name} via Portfolio`
-                })
-            });
+        if (isSupabaseConfigured) {
+            try {
+                const { error } = await supabase
+                    .from('contact_messages')
+                    .insert([
+                        {
+                            name: formData.name,
+                            email: formData.email,
+                            phone: isCompany ? formData.phone : null,
+                            message: formData.message,
+                            profile: isCompany ? 'company' : 'personal'
+                        }
+                    ]);
 
-            const result = await response.json();
+                if (error) throw error;
 
-            if (result.success) {
                 setStatus('success');
-                setFormData({ name: '', email: '', message: '' });
-            } else {
+                setFormData({ name: '', email: '', phone: '', message: '' });
+            } catch (err) {
+                console.error(err);
                 setStatus('error');
             }
-        } catch (err) {
-            console.error(err);
-            setStatus('error');
+        } else {
+            // Web3Forms Fallback
+            try {
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({
+                        access_key: apiKey,
+                        name: formData.name,
+                        email: formData.email,
+                        message: formData.message,
+                        subject: isRtl
+                            ? `رسالة جديدة من ${formData.name} عبر Portfolio`
+                            : `New message from ${formData.name} via Portfolio`
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    setStatus('success');
+                    setFormData({ name: '', email: '', phone: '', message: '' });
+                } else {
+                    setStatus('error');
+                }
+            } catch (err) {
+                console.error(err);
+                setStatus('error');
+            }
         }
     };
 
@@ -151,7 +177,7 @@ export default function Contact({ contact, settings, lang, t, isCompany }) {
                                 </button>
                             </div>
                         ) : (
-                            <form className="contact-form" onSubmit={handleSubmit} noValidate>
+                            <form key={lang} className="contact-form" onSubmit={handleSubmit} noValidate>
                                 {/* Name */}
                                 <div className={`form-group ${errors.name ? 'has-error' : ''}`} style={{ textAlign: isRtl ? 'right' : 'left' }}>
                                     <label htmlFor="contact-name">{ct.name_label}</label>
@@ -181,6 +207,24 @@ export default function Contact({ contact, settings, lang, t, isCompany }) {
                                     />
                                     {errors.email && <span className="field-error">{errors.email}</span>}
                                 </div>
+
+                                {/* Phone (Company only) */}
+                                {isCompany && (
+                                    <div className={`form-group ${errors.phone ? 'has-error' : ''}`} style={{ textAlign: isRtl ? 'right' : 'left' }}>
+                                        <label htmlFor="contact-phone">{ct.phone_label || 'رقم الهاتف'}</label>
+                                        <input
+                                            type="tel"
+                                            id="contact-phone"
+                                            name="phone"
+                                            placeholder={ct.phone_placeholder || 'أدخل رقم الهاتف'}
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            dir="ltr"
+                                            style={{ textAlign: isRtl ? 'right' : 'left' }}
+                                        />
+                                        {errors.phone && <span className="field-error">{errors.phone}</span>}
+                                    </div>
+                                )}
 
                                 {/* Message */}
                                 <div className={`form-group ${errors.message ? 'has-error' : ''}`} style={{ textAlign: isRtl ? 'right' : 'left' }}>

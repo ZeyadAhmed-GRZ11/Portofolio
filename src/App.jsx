@@ -13,11 +13,46 @@ import CompanyServices from './components/company/CompanyServices';
 import CompanyPortfolio from './components/company/CompanyPortfolio';
 import CompanySystems from './components/company/CompanySystems';
 import { initialAppData, translations } from './data/portfolioData';
+import { supabase, isSupabaseConfigured } from './supabaseClient';
 
 // ─── Migration helper ────────────────────────────────────────────────────────
 // If the user has the OLD portfolioData key in localStorage, migrate it into
 // the new profiles.personal slot and remove the old key.
 function loadOrMigrateAppData() {
+    // On localhost without Supabase configured, always start fresh from initialAppData
+    // (avoid stale cached data from old localStorage sessions)
+    const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const isAdminLogged = localStorage.getItem('portfolio_admin_logged') === 'true';
+
+    // Non-admins get clean initialAppData — Supabase will overwrite this if configured
+    if (!isAdminLogged) {
+        const finalData = { ...initialAppData };
+        if (typeof window !== 'undefined' && window.location) {
+            const host = window.location.hostname.toLowerCase();
+            const searchParams = new URLSearchParams(window.location.search);
+            let profileParam = searchParams.get('profile');
+
+            if (!profileParam && window.location.hash.includes('?')) {
+                const hashQuery = window.location.hash.split('?')[1];
+                if (hashQuery) {
+                    const hashParams = new URLSearchParams(hashQuery);
+                    profileParam = hashParams.get('profile');
+                }
+            }
+
+            if (profileParam === 'company' || profileParam === 'techtitans' || host.includes('techtitans') || host.includes('tech-titans')) {
+                finalData.activeProfile = 'company';
+            } else if (profileParam === 'personal' || profileParam === 'zeyad' || host.includes('zeyad')) {
+                finalData.activeProfile = 'personal';
+            }
+            // On localhost without a param, default to personal
+            else if (isDev) {
+                finalData.activeProfile = 'personal';
+            }
+        }
+        return finalData;
+    }
+
     const savedNew = localStorage.getItem('appData');
     let loaded = null;
 
@@ -73,14 +108,11 @@ function loadOrMigrateAppData() {
     const finalData = loaded || { ...initialAppData };
 
     // ── Hostname-based Detection ──
-    // Enforce profile based on domain ONLY for regular visitors (not authenticated admins)
-    // Also support URL query params (e.g. ?profile=company) for easy testing/previewing
     if (typeof window !== 'undefined' && window.location) {
         const host = window.location.hostname.toLowerCase();
         const searchParams = new URLSearchParams(window.location.search);
         let profileParam = searchParams.get('profile');
 
-        // Fallback: check if the query param is appended after the hash, e.g., #portfolio?profile=company
         if (!profileParam && window.location.hash.includes('?')) {
             const hashQuery = window.location.hash.split('?')[1];
             if (hashQuery) {
@@ -89,9 +121,9 @@ function loadOrMigrateAppData() {
             }
         }
 
-        const isAdmin = sessionStorage.getItem('isAdminAuthenticated') === 'true';
+        const isAdminAuth = sessionStorage.getItem('isAdminAuthenticated') === 'true';
 
-        if (!isAdmin) {
+        if (!isAdminAuth) {
             if (profileParam === 'company' || profileParam === 'techtitans' || host.includes('techtitans') || host.includes('tech-titans')) {
                 finalData.activeProfile = 'company';
             } else if (profileParam === 'personal' || profileParam === 'zeyad' || host.includes('zeyad')) {
@@ -119,6 +151,71 @@ export default function App() {
     // ── App Data (single source of truth) ────────────────────────
     const [appData, setAppData] = useState(loadOrMigrateAppData);
     const [isAdminOpen, setIsAdminOpen] = useState(false);
+    // Only show loading screen if Supabase IS configured (has env vars)
+    const [loadingDb, setLoadingDb] = useState(false);
+
+    // ── Fetch content from Supabase ──────────────────────────────
+    useEffect(() => {
+        const fetchDbData = async () => {
+            if (!isSupabaseConfigured) {
+                setLoadingDb(false);
+                return;
+            }
+            setLoadingDb(true);
+            try {
+                const { data: dbRow, error } = await supabase
+                    .from('portfolio_data')
+                    .select('data')
+                    .eq('id', 1)
+                    .single();
+
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        // Table is empty, seed it with initialAppData
+                        await supabase
+                            .from('portfolio_data')
+                            .insert([{ id: 1, data: initialAppData, updated_at: new Date().toISOString() }]);
+                        setAppData(initialAppData);
+                    } else {
+                        throw error;
+                    }
+                } else if (dbRow && dbRow.data) {
+                    let profileData = dbRow.data;
+
+                    // Re-enforce query/domain profile logic
+                    if (typeof window !== 'undefined' && window.location) {
+                        const host = window.location.hostname.toLowerCase();
+                        const searchParams = new URLSearchParams(window.location.search);
+                        let profileParam = searchParams.get('profile');
+
+                        if (!profileParam && window.location.hash.includes('?')) {
+                            const hashQuery = window.location.hash.split('?')[1];
+                            if (hashQuery) {
+                                const hashParams = new URLSearchParams(hashQuery);
+                                profileParam = hashParams.get('profile');
+                            }
+                        }
+
+                        const isAdminAuth = sessionStorage.getItem('isAdminAuthenticated') === 'true';
+                        if (!isAdminAuth) {
+                            if (profileParam === 'company' || profileParam === 'techtitans' || host.includes('techtitans') || host.includes('tech-titans')) {
+                                profileData.activeProfile = 'company';
+                            } else if (profileParam === 'personal' || profileParam === 'zeyad' || host.includes('zeyad')) {
+                                profileData.activeProfile = 'personal';
+                            }
+                        }
+                    }
+                    setAppData(profileData);
+                }
+            } catch (err) {
+                console.error('Error fetching data from Supabase:', err);
+            } finally {
+                setLoadingDb(false);
+            }
+        };
+
+        fetchDbData();
+    }, []);
 
     // Derived helpers
     const activeProfile   = appData.activeProfile;
@@ -131,7 +228,11 @@ export default function App() {
 
     // ── Persistence ───────────────────────────────────────────────
     useEffect(() => {
-        localStorage.setItem('appData', JSON.stringify(appData));
+        const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        const isAdmin = isDev || localStorage.getItem('portfolio_admin_logged') === 'true';
+        if (isAdmin) {
+            localStorage.setItem('appData', JSON.stringify(appData));
+        }
     }, [appData]);
 
     // ── Dynamic Page Title ────────────────────────────────────────
@@ -215,6 +316,17 @@ export default function App() {
         ...(companyProfile?.portfolio || []),
         ...personalAsCompanyPortfolio
     ];
+
+    if (loadingDb) {
+        return (
+            <div className="db-loading-screen">
+                <div className="spinner"></div>
+                <p style={{ marginTop: '20px', fontFamily: 'var(--font-heading)' }}>
+                    {lang === 'ar' ? 'جاري تحميل البيانات...' : 'Loading data...'}
+                </p>
+            </div>
+        );
+    }
 
     return (
         <>

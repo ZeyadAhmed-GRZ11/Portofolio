@@ -64,6 +64,8 @@ export const translations = {
             name_label: 'الاسم الكريم',
             name_placeholder: 'أدخل اسمك الكامل',
             email_label2: 'عنوان البريد الإلكتروني',
+            phone_label: 'رقم الهاتف',
+            phone_placeholder: 'أدخل رقم الهاتف (مثال: 01xxxxxxxxx)',
             message_label: 'تفاصيل الرسالة',
             message_placeholder: 'مرحباً زياد، أود التعاون معك في مشروع...',
             send: 'إرسال الرسالة',
@@ -71,6 +73,7 @@ export const translations = {
             error: 'حدث خطأ في الإرسال. يرجى المحاولة مرة أخرى.',
             err_name: 'يرجى إدخال اسمك الكريم',
             err_email: 'يرجى إدخال بريد إلكتروني صحيح',
+            err_phone: 'يرجى إدخال رقم هاتف صحيح',
             err_message: 'يرجى كتابة تفاصيل الرسالة'
         },
         footer: {
@@ -165,6 +168,8 @@ export const translations = {
             name_label: 'Your Name',
             name_placeholder: 'Enter your full name',
             email_label2: 'Email Address',
+            phone_label: 'Phone Number',
+            phone_placeholder: 'Enter your phone number (e.g. +201xxxxxxxxx)',
             message_label: 'Message',
             message_placeholder: "Hi Zeyad, I'd like to collaborate on...",
             send: 'Send Message',
@@ -172,6 +177,7 @@ export const translations = {
             error: 'An error occurred. Please try again.',
             err_name: 'Please enter your name',
             err_email: 'Please enter a valid email address',
+            err_phone: 'Please enter a valid phone number',
             err_message: 'Please write a message'
         },
         footer: {

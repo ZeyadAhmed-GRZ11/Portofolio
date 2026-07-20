@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './AdminDashboard.css';
+import { supabase, isSupabaseConfigured } from '../supabaseClient';
 
 const adminTranslations = {
     ar: {
@@ -34,6 +35,7 @@ const adminTranslations = {
         tabServices: 'الخدمات',
         tabPortfolio: 'أعمال الشركة',
         tabCompanySystems: 'أنظمة البرمجيات',
+        tabMessages: 'الرسائل الواردة',
 
         exportBtn: 'تصدير JSON',
         importBtn: 'استيراد JSON',
@@ -50,6 +52,14 @@ const adminTranslations = {
         headerServices: 'إدارة خدمات الشركة',
         headerPortfolio: 'إدارة أعمال ومشاريع الشركة',
         headerCompanySystems: 'إدارة أنظمة البرمجيات للشركة',
+        headerMessages: 'عرض رسائل تواصل المستخدمين',
+        msgName: 'الاسم',
+        msgEmail: 'البريد الإلكتروني',
+        msgPhone: 'رقم الهاتف',
+        msgMessage: 'الرسالة',
+        msgDate: 'التاريخ والوقت',
+        msgActions: 'إجراءات',
+        confirmDeleteMessage: 'هل تريد حذف هذه الرسالة؟',
 
         // Visibility
         visibilityHelp: 'أوقف أي قسم لإخفائه من الموقع والقائمة العلوية فوراً.',
@@ -221,6 +231,7 @@ const adminTranslations = {
         tabServices: 'Services',
         tabPortfolio: 'Company Work',
         tabCompanySystems: 'Software Systems',
+        tabMessages: 'Inbox Messages',
 
         exportBtn: 'Export JSON',
         importBtn: 'Import JSON',
@@ -237,6 +248,14 @@ const adminTranslations = {
         headerServices: 'Manage Company Services',
         headerPortfolio: 'Manage Company Portfolio',
         headerCompanySystems: 'Manage Company Web & Software Systems',
+        headerMessages: 'View Visitor Contact Messages',
+        msgName: 'Name',
+        msgEmail: 'Email',
+        msgPhone: 'Phone',
+        msgMessage: 'Message',
+        msgDate: 'Date & Time',
+        msgActions: 'Actions',
+        confirmDeleteMessage: 'Are you sure you want to delete this message?',
 
         // Visibility
         visibilityHelp: 'Toggle any section off to instantly hide it from the live site and navigation.',
@@ -405,6 +424,9 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
     const [isAuthenticated, setIsAuthenticated] = useState(() =>
         sessionStorage.getItem('isAdminAuthenticated') === 'true'
     );
+    const [messages,        setMessages]        = useState([]);
+    const [loadingMessages, setLoadingMessages] = useState(false);
+    const [saving,          setSaving]          = useState(false);
 
     const [activeTab,       setActiveTab]       = useState('general');
     const [showExportModal, setShowExportModal] = useState(false);
@@ -425,6 +447,31 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
     useEffect(() => {
         if (!isOpen) { setPasscode(''); setLoginError(''); }
     }, [isOpen]);
+
+    // ── Messages fetch effect (must be before any early returns) ──
+    const fetchMessages = async () => {
+        if (!isSupabaseConfigured) return;
+        setLoadingMessages(true);
+        try {
+            const { data, error } = await supabase
+                .from('contact_messages')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            setMessages(data || []);
+        } catch (err) {
+            console.error('Error fetching messages:', err);
+        } finally {
+            setLoadingMessages(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen && activeTab === 'messages' && isAuthenticated) {
+            fetchMessages();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, activeTab, isAuthenticated]);
 
     if (!isOpen) return null;
 
@@ -461,6 +508,7 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
         if (passcode === 'admin123' || passcode === 'zeyad2026') {
             setIsAuthenticated(true);
             sessionStorage.setItem('isAdminAuthenticated', 'true');
+            localStorage.setItem('portfolio_admin_logged', 'true');
             setLoginError('');
         } else {
             setLoginError(ad.loginError);
@@ -470,7 +518,42 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
     const handleLogout = () => {
         setIsAuthenticated(false);
         sessionStorage.removeItem('isAdminAuthenticated');
+        localStorage.removeItem('portfolio_admin_logged');
     };
+
+
+    const handleDeleteMessage = async (id) => {
+        if (!window.confirm(ad.confirmDeleteMessage || 'Are you sure you want to delete this message?')) return;
+        try {
+            const { error } = await supabase
+                .from('contact_messages')
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            setMessages(prev => prev.filter(m => m.id !== id));
+        } catch (err) {
+            console.error('Error deleting message:', err);
+        }
+    };
+
+    const handleSaveAndClose = async () => {
+        if (isSupabaseConfigured) {
+            setSaving(true);
+            try {
+                const { error } = await supabase
+                    .from('portfolio_data')
+                    .upsert({ id: 1, data: appData, updated_at: new Date().toISOString() });
+                if (error) throw error;
+            } catch (err) {
+                console.error('Error saving to Supabase:', err);
+                alert(lang === 'ar' ? 'حدث خطأ أثناء الحفظ في قاعدة البيانات.' : 'Error saving to database.');
+            } finally {
+                setSaving(false);
+            }
+        }
+        onClose();
+    };
+
 
     // ── Generic field updater ─────────────────────────────────────
     const updateField = (section, field, value) => {
@@ -869,8 +952,16 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
                         <div className={`admin-menu-item ${activeTab === 'companySystems' ? 'active' : ''}`} onClick={() => goToTab('companySystems')}>{ad.tabCompanySystems}</div>
                     </>)}
 
+                    {/* Messages tab — always visible if Supabase is configured */}
+                    {isSupabaseConfigured && (
+                        <div className={`admin-menu-item ${activeTab === 'messages' ? 'active' : ''}`} onClick={() => goToTab('messages')} style={{ marginTop: '8px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+                            <span style={{ marginRight: isRtl ? 0 : '6px', marginLeft: isRtl ? '6px' : 0 }}>📬</span>
+                            {ad.tabMessages}
+                        </div>
+                    )}
+
                     {/* Visibility — always visible */}
-                    <div className={`admin-menu-item ${activeTab === 'visibility' ? 'active' : ''}`} onClick={() => goToTab('visibility')} style={{ marginTop: '8px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+                    <div className={`admin-menu-item ${activeTab === 'visibility' ? 'active' : ''}`} onClick={() => goToTab('visibility')} style={{ marginTop: isSupabaseConfigured ? '4px' : '8px', borderTop: isSupabaseConfigured ? 'none' : '1px solid var(--border-color)', paddingTop: isSupabaseConfigured ? '0' : '16px' }}>
                         <span style={{ marginRight: isRtl ? 0 : '6px', marginLeft: isRtl ? '6px' : 0 }}>👁</span>
                         {ad.tabVisibility}
                     </div>
@@ -899,13 +990,98 @@ export default function AdminDashboard({ isOpen, onClose, appData, setAppData, o
                         {activeTab === 'services'        && ad.headerServices}
                         {activeTab === 'companyPortfolio' && ad.headerPortfolio}
                         {activeTab === 'companySystems'   && ad.headerCompanySystems}
+                        {activeTab === 'messages'        && ad.headerMessages}
                     </h2>
                     <div className="admin-actions">
-                        <button className="btn btn-primary" onClick={onClose}>{ad.saveCloseBtn}</button>
+                        <button className="btn btn-primary" onClick={handleSaveAndClose} disabled={saving}>
+                            {saving ? (isRtl ? 'جاري الحفظ...' : 'Saving...') : ad.saveCloseBtn}
+                        </button>
                     </div>
                 </div>
 
                 <div className="admin-content">
+
+                    {/* ══════════════════════════════════════════════
+                        TAB: MESSAGES INBOX
+                    ══════════════════════════════════════════════ */}
+                    {activeTab === 'messages' && (
+                        <div className="admin-section-card">
+                            {loadingMessages ? (
+                                <div style={{ textAlign: 'center', padding: '40px' }}>
+                                    <div className="submit-spinner" style={{ margin: '0 auto 16px auto', borderTopColor: 'var(--accent-primary)', display: 'block' }}></div>
+                                    <p>{isRtl ? 'جاري تحميل الرسائل...' : 'Loading messages...'}</p>
+                                </div>
+                            ) : messages.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                                    <span style={{ fontSize: '3rem', display: 'block', marginBottom: '16px' }}>📭</span>
+                                    <p>{isRtl ? 'لا توجد رسائل واردة حالياً.' : 'No messages found.'}</p>
+                                </div>
+                            ) : (
+                                <div className="admin-messages-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    {messages.map(msg => (
+                                        <div key={msg.id} className="admin-message-card" style={{
+                                            backgroundColor: 'var(--bg-primary)',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: 'var(--border-radius-md)',
+                                            padding: '20px',
+                                            textAlign: isRtl ? 'right' : 'left',
+                                            position: 'relative'
+                                        }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'flex-start',
+                                                marginBottom: '12px',
+                                                flexDirection: isRtl ? 'row-reverse' : 'row'
+                                            }}>
+                                                <div>
+                                                    <h4 style={{ margin: '0 0 6px 0', fontSize: '1.1rem', fontWeight: 600 }}>{msg.name}</h4>
+                                                    <span style={{
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: 600,
+                                                        color: 'var(--accent-secondary)',
+                                                        backgroundColor: 'rgba(6, 182, 212, 0.08)',
+                                                        padding: '2px 8px',
+                                                        borderRadius: '4px',
+                                                        border: '1px solid rgba(6, 182, 212, 0.15)',
+                                                        textTransform: 'uppercase'
+                                                    }}>
+                                                        {msg.profile === 'company' ? (isRtl ? 'شركة Tech Titans' : 'Company profile') : (isRtl ? 'ملف شخصي' : 'Personal profile')}
+                                                    </span>
+                                                </div>
+                                                <button className="btn-admin-icon delete" onClick={() => handleDeleteMessage(msg.id)} title={ad.deleteImgBtn || 'Delete'}>
+                                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+                                                <p style={{ margin: 0 }}><strong>{ad.msgEmail}:</strong> <a href={'mailto:' + msg.email} style={{ color: 'var(--accent-primary)' }}>{msg.email}</a></p>
+                                                {msg.phone && <p style={{ margin: 0 }}><strong>{ad.msgPhone}:</strong> <a href={'tel:' + msg.phone} style={{ color: 'var(--accent-primary)' }}>{msg.phone}</a></p>}
+                                                <p style={{ margin: 0 }}><strong>{ad.msgDate}:</strong> {new Date(msg.created_at).toLocaleString(lang === 'ar' ? 'ar-EG' : 'en-US')}</p>
+                                            </div>
+
+                                            <div style={{
+                                                backgroundColor: 'var(--bg-secondary)',
+                                                padding: '12px 16px',
+                                                borderRadius: 'var(--border-radius-sm)',
+                                                borderLeft: isRtl ? 'none' : '3px solid var(--accent-primary)',
+                                                borderRight: isRtl ? '3px solid var(--accent-primary)' : 'none',
+                                                fontSize: '0.95rem',
+                                                lineHeight: 1.6,
+                                                whiteSpace: 'pre-wrap',
+                                                color: 'var(--text-primary)'
+                                            }}>
+                                                {msg.message}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* ══════════════════════════════════════════════
                         TAB: SECTION VISIBILITY
